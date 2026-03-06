@@ -35,6 +35,10 @@ public class User {
     @Column(nullable = false)
     private UserStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role;
+
     //--Bezpieczeństwo
     @Column(nullable = false)
     private int failedLoginAttempts = 0;
@@ -48,9 +52,7 @@ public class User {
     //--Audyt
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
-
     private Instant updatedAt;
-
 
 
     @PrePersist
