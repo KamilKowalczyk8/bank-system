@@ -1,37 +1,46 @@
 package com.bank.auth_service.service;
 
-import com.bank.auth_service.dto.LoginStep1Request;
-import com.bank.auth_service.dto.LoginStep1Response;
-import com.bank.auth_service.dto.RegisterRequest;
-import com.bank.auth_service.dto.RegisterResponse;
+import com.bank.auth_service.dto.*;
+import com.bank.auth_service.entity.LoginAttempt;
 import com.bank.auth_service.entity.User;
 import com.bank.auth_service.entity.UserRole;
 import com.bank.auth_service.entity.UserStatus;
 import com.bank.auth_service.exception.AccountBlockedException;
+import com.bank.auth_service.exception.InvalidCredentialsException;
+import com.bank.auth_service.repository.LoginAttemptRepository;
 import com.bank.auth_service.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
+
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @Transactional
 public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final LoginAttemptRepository loginAttemptRepository;
+
+    private final String dummyHash;
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final String TEMP_PASSWORD_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-    @Transactional
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, LoginAttemptRepository loginAttemptRepository) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.loginAttemptRepository = loginAttemptRepository;
+        this.dummyHash = passwordEncoder.encode("dummy-password-for-timing-attack");
+    }
+
     public RegisterResponse register(RegisterRequest request) {
         String login;
         do {
@@ -48,7 +57,6 @@ public class AuthService {
                 .tempPassword(true)
                 .status(UserStatus.PENDING)
                 .role(UserRole.USER)
-                .failedLoginAttempts(0)
                 .build();
 
         userRepository.save(bankUser);
@@ -65,6 +73,68 @@ public class AuthService {
         );
     }
 
+
+    public LoginStep1Response verifyLoginStep1(LoginStep1Request request) {
+        log.info("Rozpoczęto próbę logowania dla loginu: {}", request.login());
+
+        Optional<User> userOptional = userRepository.findByLogin(request.login());
+
+        if (userOptional.isEmpty()) {
+            log.warn("Nieudana próba logowania");
+        } else {
+            User user = userOptional.get();
+            log.info("Login {} odnaleziony. Status: {}. Oczekiwanie na hasło.", user.getLogin(), user.getStatus());
+        }
+
+        return new LoginStep1Response(
+                request.login(),
+                "PROVIDE_PASSWORD",
+                "Podaj hasło"
+        );
+    }
+
+    public LoginStep2Response verifyLoginStep2(LoginStep2Request request) {
+        log.info("Rozpoczęto weryfikacje hasła dla loginu {}", request.login());
+
+        Optional<User> userOptional = userRepository.findByLogin(request.login());
+        User user = userOptional.orElse(null);
+
+        String hashToVerify = user != null ? user.getPasswordHash() : dummyHash;
+
+        boolean passwordMatches = passwordEncoder.matches(request.password(), hashToVerify);
+
+        if(user == null || !passwordMatches) {
+
+            if (user != null) {
+                handleFailedLoginAttempt(user);
+            }
+
+            throw new InvalidCredentialsException(
+                    "Nieprawidłowy login lub hasło"
+            );
+        }
+
+        checkAccountStatus(user);
+
+        loginAttemptRepository.save(LoginAttempt.builder()
+                .user(user)
+                .success(true)
+                .attemptTime(Instant.now())
+                .build());
+
+        log.info("Hasło poprawne dla loginu {}", request.login());
+
+        return new LoginStep2Response(
+                user.getLogin(),
+                "PROVIDE_SMS_CODE",
+                "Podaj kod SMS wysłany na Twój numer telefonu"
+        );
+
+    }
+
+
+    //Metody używane do logowania oraz rejestracji
+
     private String generateNumericLogin() {
         int numericId = 10000000 + SECURE_RANDOM.nextInt(90000000);
         return String.valueOf(numericId);
@@ -79,24 +149,63 @@ public class AuthService {
         return sb.toString();
     }
 
-    public LoginStep1Response verifyLoginStep1(LoginStep1Request request) {
-        log.info("Rozpoczęto próbę logowania dla loginu: {}", request.login());
-
-        Optional<User> userOptional = userRepository.findByLogin(request.login());
-
-        if (userOptional.isEmpty()) {
-            log.warn("Próba logowania na nieistniejący login: {}", request.login());
-        } else {
-            User user = userOptional.get();
-            log.info("Login {} odnaleziony. Status: {}. Oczekiwanie na hasło.", user.getLogin(), user.getStatus());
+    private void checkAccountStatus(User user) {
+        if (user.getStatus() == UserStatus.BLOCKED) {
+            throw new AccountBlockedException("Konto jest zablokowane. Skontaktuj się z infolinią.");
         }
 
-        return new LoginStep1Response(
-                request.login(),
-                "PROVIDE_PASSWORD",
-                "Podaj hasło"
-        );
+        if (user.getLockedUntil() != null) {
+            if (Instant.now().isBefore(user.getLockedUntil())) {
+                throw new AccountBlockedException("Konto jest tymczasowo zablokowane.");
+            }
+            user.setLockedUntil(null);
+        }
+    }
+
+    private void handleFailedLoginAttempt(User user) {
+        if (user.getStatus() == UserStatus.BLOCKED) {
+            return;
+        }
+
+        loginAttemptRepository.save(LoginAttempt.builder()
+                .user(user)
+                .success(false)
+                .attemptTime(Instant.now())
+                .build());
+
+        Instant last24hours = Instant.now().minus(24, ChronoUnit.HOURS);
+        int attempts = loginAttemptRepository.countByUserAndSuccessFalseAndAttemptTimeAfter(user, last24hours);
+
+        if (attempts >= 6) {
+            user.setLockedUntil(Instant.now().plus(24, ChronoUnit.HOURS));
+            log.warn("Konto {} zostało zablokowane na 24h ({} błędów).", user.getLogin(), attempts);
+        } else if (attempts >= 3) {
+            user.setLockedUntil(Instant.now().plus(15, ChronoUnit.MINUTES));
+            log.warn("Konto {} zostało zablokowane na 15 min ({} błędów).", user.getLogin(), attempts);
+        } else {
+            log.warn("Błędne hasło dla konta {}. Próba {}/3 do pierwszej blokady.", user.getLogin(), attempts);
+        }
 
     }
 
 }
+
+// ===================================================================================
+// TODO (Architektura & Rozwój mikroserwisu - do wdrożenia w późniejszych etapach):
+// ===================================================================================
+// 1. [Rozbicie Serwisów] Wydzielenie metody `register` do osobnego mikroserwisu
+//    (np. user-service). Docelowo AuthService ma odpowiadać WYŁĄCZNIE za weryfikację
+//    tożsamości, hasła, tokeny i blokady.
+//
+// 2. [Security Audit] Zastąpienie obecnych logów (log.warn) asynchronicznym wysyłaniem
+//    zdarzeń (np. za pomocą Kafka / RabbitMQ) do dedykowanego 'audit-service'.
+//    Wymagane do pełnej zgodności z audytami bezpieczeństwa (rejestrowanie LOGIN_FAILED).
+//
+// 3. [Device Fingerprinting] Wzbogacenie encji LoginAttempt o zapisywanie nagłówków
+//    z żądania HTTP (np. User-Agent), które w przyszłości przekaże nam kontroler.
+//
+// UWAGA ARCHITEKTONICZNA:
+// Zabezpieczenia sieciowe (Rate Limiting, ochrona przed atakami DDoS, blokowanie po IP)
+// są celowo pominięte w tym kodzie. Zgodnie z architekturą mikroserwisów, za odrzucanie
+// spamu przed dotarciem do AuthService odpowiada API Gateway.
+// ===================================================================================

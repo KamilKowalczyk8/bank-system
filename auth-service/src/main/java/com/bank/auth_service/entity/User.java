@@ -40,9 +40,6 @@ public class User {
     private UserRole role;
 
     //--Bezpieczeństwo
-    @Column(nullable = false)
-    private int failedLoginAttempts = 0;
-
     private Instant lockedUntil;
 
     private Instant lastLoginAt;
@@ -71,8 +68,6 @@ public class User {
 }
 
 // TODO (przyszłe rozszerzenia encji User):
-// 1. @NotBlank do login, phoneNumber, passwordHash (walidacja aplikacyjna).
-// 2. ról użytkownika (np. USER, ADMIN) jeśli pojawi się panel administracyjny.
 // 3. Dodać pole isPhoneVerified, jeśli wprowadzimy weryfikację numeru telefonu.
 // 4. Dodać metody domenowe (np. recordFailedLogin()), jeśli przejdziemy na pełne DDD.
 // 5. Rozważyć przeniesienie logiki blokowania konta do encji, gdy aplikacja urośnie.
