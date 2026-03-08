@@ -1,13 +1,11 @@
 package com.bank.auth_service.service;
 
 import com.bank.auth_service.dto.*;
-import com.bank.auth_service.entity.LoginAttempt;
-import com.bank.auth_service.entity.User;
-import com.bank.auth_service.entity.UserRole;
-import com.bank.auth_service.entity.UserStatus;
+import com.bank.auth_service.entity.*;
 import com.bank.auth_service.exception.AccountBlockedException;
 import com.bank.auth_service.exception.InvalidCredentialsException;
 import com.bank.auth_service.repository.LoginAttemptRepository;
+import com.bank.auth_service.repository.LoginSessionRepository;
 import com.bank.auth_service.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,16 +26,18 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final LoginAttemptRepository loginAttemptRepository;
+    private final LoginSessionRepository loginSessionRepository;
 
     private final String dummyHash;
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final String TEMP_PASSWORD_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, LoginAttemptRepository loginAttemptRepository) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, LoginAttemptRepository loginAttemptRepository, LoginSessionRepository loginSessionRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.loginAttemptRepository = loginAttemptRepository;
+        this.loginSessionRepository = loginSessionRepository;
         this.dummyHash = passwordEncoder.encode("dummy-password-for-timing-attack");
     }
 
@@ -122,18 +122,73 @@ public class AuthService {
                 .attemptTime(Instant.now())
                 .build());
 
-        log.info("Hasło poprawne dla loginu {}", request.login());
+        String smsCode = generateSmsCode();
+
+        LoginSession session = LoginSession.builder()
+                .user(user)
+                .smsCode(smsCode)
+                .expiresAt(Instant.now().plus(3, ChronoUnit.MINUTES))
+                .isUsed(false)
+                .build();
+
+        session = loginSessionRepository.save(session);
+
+        log.info("=== SYMULACJA WYSYŁKI SMS ===");
+        log.info("Wysyłam SMS na numer {}: Twój kod logowania to {}", user.getPhoneNumber(), smsCode);
+        log.info("=============================");
 
         return new LoginStep2Response(
-                user.getLogin(),
+                session.getId(),
                 "PROVIDE_SMS_CODE",
                 "Podaj kod SMS wysłany na Twój numer telefonu"
         );
 
     }
 
+    public LoginStep3Response verifyLoginStep3(LoginStep3Request request) {
+        log.info("Rozpoczęto weryfikację kodu SMS dla sesji: {}", request.sessionId());
 
-    //Metody używane do logowania oraz rejestracji
+        LoginSession session = loginSessionRepository.findById(request.sessionId())
+                .orElseThrow(() -> new InvalidCredentialsException("Sesja logowania nie istnieje"));
+
+        if (Instant.now().isAfter(session.getExpiresAt())) {
+            throw new InvalidCredentialsException("Czas na wpisanie kodu SMS minął. Zaloguj się ponownie.");
+        }
+
+        if (session.isUsed()) {
+            throw new InvalidCredentialsException("Tem kod SMS został już wykorzystany");
+        }
+
+        if (!session.getSmsCode().equals(request.smsCode())) {
+            throw new InvalidCredentialsException("Nieprawidłowy kod SMS.");
+        }
+
+        session.setUsed(true);
+
+        User user = session.getUser();
+        if (user.getStatus() == UserStatus.PENDING) {
+            user.setStatus(UserStatus.ACTIVE);
+            log.info("Konto {} zostało w pełni aktywowane po pierwszym logowaniu.", user.getLogin());
+        }
+
+        log.info("Logowanie zakończone pełnym sukcesem dla: {}", user.getLogin());
+
+        String dummyJwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy.signature";
+
+        return new LoginStep3Response(
+                "Logowanie pomyślne",
+                dummyJwtToken
+        );
+
+    }
+
+
+    //Metody używane do logowania oraz rejestracji (pomocznicze)
+
+    private String generateSmsCode() {
+        int code = 100000 + SECURE_RANDOM.nextInt(900000);
+        return String.valueOf(code);
+    }
 
     private String generateNumericLogin() {
         int numericId = 10000000 + SECURE_RANDOM.nextInt(90000000);
