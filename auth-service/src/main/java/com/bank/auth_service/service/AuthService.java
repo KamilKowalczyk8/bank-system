@@ -32,13 +32,15 @@ public class AuthService {
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final String TEMP_PASSWORD_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private final JwtService jwtService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, LoginAttemptRepository loginAttemptRepository, LoginSessionRepository loginSessionRepository) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, LoginAttemptRepository loginAttemptRepository, LoginSessionRepository loginSessionRepository, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.loginAttemptRepository = loginAttemptRepository;
         this.loginSessionRepository = loginSessionRepository;
         this.dummyHash = passwordEncoder.encode("dummy-password-for-timing-attack");
+        this.jwtService = jwtService;
     }
 
     public RegisterResponse register(RegisterRequest request) {
@@ -134,6 +136,7 @@ public class AuthService {
         session = loginSessionRepository.save(session);
 
         log.info("=== SYMULACJA WYSYŁKI SMS ===");
+        log.info("Wysyłam uuid  {}: Twój kod uuid to {}", session.getId());
         log.info("Wysyłam SMS na numer {}: Twój kod logowania to {}", user.getPhoneNumber(), smsCode);
         log.info("=============================");
 
@@ -173,11 +176,13 @@ public class AuthService {
 
         log.info("Logowanie zakończone pełnym sukcesem dla: {}", user.getLogin());
 
-        String dummyJwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy.signature";
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
 
         return new LoginStep3Response(
                 "Logowanie pomyślne",
-                dummyJwtToken
+                accessToken,
+                refreshToken
         );
 
     }
@@ -259,6 +264,9 @@ public class AuthService {
 // 3. [Device Fingerprinting] Wzbogacenie encji LoginAttempt o zapisywanie nagłówków
 //    z żądania HTTP (np. User-Agent), które w przyszłości przekaże nam kontroler.
 //
+// 4. [Security] Login Throttling - mechanizm celowego opóźniania odpowiedzi (np. za pomocą algorytmu Token Bucket) przy kolejnych błędnych próbach logowania, aby spowolnić ataki słownikowe.
+// 5. [Security] Risk-Based Authentication - analiza kontekstu logowania (nowy adres IP, inne urządzenie, dziwne godziny) w celu podniesienia poziomu weryfikacji przed wysłaniem SMS.
+
 // UWAGA ARCHITEKTONICZNA:
 // Zabezpieczenia sieciowe (Rate Limiting, ochrona przed atakami DDoS, blokowanie po IP)
 // są celowo pominięte w tym kodzie. Zgodnie z architekturą mikroserwisów, za odrzucanie

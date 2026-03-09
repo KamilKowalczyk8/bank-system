@@ -58,6 +58,16 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Logowanie - Krok 3 (Weryfikacja kodu SMS)", description = "Weryfikuje kod SMS i identyfikator sesji. Wydaje ostateczny token JWT.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Kod poprawny, logowanie udane"),
+            @ApiResponse(responseCode = "401", description = "Nieprawidłowy kod, wygasła lub zużyta sesja")
+    })
+    @PostMapping("/login/step3")
+    public ResponseEntity<LoginStep3Response> loginStep3(@RequestBody @Valid LoginStep3Request request) {
+        LoginStep3Response response = authService.verifyLoginStep3(request);
+        return ResponseEntity.ok(response);
+    }
 
 }
 

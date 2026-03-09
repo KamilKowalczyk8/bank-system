@@ -23,13 +23,16 @@ public class LoginSession {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false)
+    @Column(name = "sms_code", nullable = false)
     private String smsCode;
 
-    @Column(nullable = false)
+    @Column(name = "expires_at", nullable = false)
     private Instant expiresAt;
 
-    @Column(nullable = false)
+    @Column(name = "is_used", nullable = false)
     private boolean isUsed;
 
+    @Column(name = "failed_attempts", nullable = false)
+    @Builder.Default
+    private int failedAttempts = 0;
 }

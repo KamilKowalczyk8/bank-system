@@ -7,8 +7,10 @@ public record LoginStep3Response(
         @Schema(description = "Komunikat sukcesu", example = "Logowanie zakończone pomyślnie")
         String message,
 
-        @Schema(description = "Ostateczny token dostępu do banku (JWT)")
-        String accessToken
+        @Schema(description = "Krótko żyjący token dostępu (np. 5 minut)")
+        String accessToken,
 
+        @Schema(description = "Długo żyjący token do odświeżania sesji (np. 24h)")
+        String refreshToken
 ) {
 }
