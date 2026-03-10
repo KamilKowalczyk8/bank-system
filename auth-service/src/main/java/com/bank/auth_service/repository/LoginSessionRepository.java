@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Repository
@@ -15,5 +16,9 @@ public interface LoginSessionRepository extends JpaRepository<LoginSession, UUID
     @Modifying
     @Query("UPDATE LoginSession s SET s.isUsed = true WHERE s.user = :user AND s.isUsed = false")
     void invalidateAllActiveSessionsForUser(@Param("user") User user);
+
+    @Modifying
+    @Query("DELETE FROM LoginSession s WHERE s.expiresAt < :cutoffDate")
+    void deleteAllSessionsOlderThan(@Param("cutoffDate") Instant cutoffDate);
 
 }

@@ -6,8 +6,10 @@ import com.bank.auth_service.exception.AccountBlockedException;
 import com.bank.auth_service.exception.InvalidCredentialsException;
 import com.bank.auth_service.repository.LoginAttemptRepository;
 import com.bank.auth_service.repository.LoginSessionRepository;
+import com.bank.auth_service.repository.RefreshTokenRepository;
 import com.bank.auth_service.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final LoginAttemptRepository loginAttemptRepository;
     private final LoginSessionRepository loginSessionRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     private final String dummyHash;
 
@@ -34,14 +37,20 @@ public class AuthService {
     private static final String TEMP_PASSWORD_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private final JwtService jwtService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, LoginAttemptRepository loginAttemptRepository, LoginSessionRepository loginSessionRepository, JwtService jwtService) {
+    @Value("${jwt.refresh-expiration}")
+    private long refreshExpiration;
+
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, LoginAttemptRepository loginAttemptRepository, LoginSessionRepository loginSessionRepository, RefreshTokenRepository refreshTokenRepository,JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.loginAttemptRepository = loginAttemptRepository;
         this.loginSessionRepository = loginSessionRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
         this.dummyHash = passwordEncoder.encode("dummy-password-for-timing-attack");
         this.jwtService = jwtService;
     }
+
+
 
     public RegisterResponse register(RegisterRequest request) {
         String login;
@@ -124,6 +133,8 @@ public class AuthService {
                 .attemptTime(Instant.now())
                 .build());
 
+        loginSessionRepository.invalidateAllActiveSessionsForUser(user);
+
         String smsCode = generateSmsCode();
 
         LoginSession session = LoginSession.builder()
@@ -148,6 +159,7 @@ public class AuthService {
 
     }
 
+    @Transactional(noRollbackFor = InvalidCredentialsException.class)
     public LoginStep3Response verifyLoginStep3(LoginStep3Request request) {
         log.info("Rozpoczęto weryfikację kodu SMS dla sesji: {}", request.sessionId());
 
@@ -162,11 +174,20 @@ public class AuthService {
             throw new InvalidCredentialsException("Tem kod SMS został już wykorzystany");
         }
 
+        if (session.getFailedAttempts() >=3) {
+            session.setUsed(true);
+            loginSessionRepository.save(session);
+            throw new InvalidCredentialsException("Przekroczono limit prób wpisania kodu SMS. Zaloguj się ponownie.");
+        }
+
         if (!session.getSmsCode().equals(request.smsCode())) {
+            session.setFailedAttempts(session.getFailedAttempts() + 1);
+            loginSessionRepository.save(session);
             throw new InvalidCredentialsException("Nieprawidłowy kod SMS.");
         }
 
         session.setUsed(true);
+        loginSessionRepository.save(session);
 
         User user = session.getUser();
         if (user.getStatus() == UserStatus.PENDING) {
@@ -176,8 +197,19 @@ public class AuthService {
 
         log.info("Logowanie zakończone pełnym sukcesem dla: {}", user.getLogin());
 
+        refreshTokenRepository.revokeAllUserTokens(user);
+
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
+
+        RefreshToken refreshTokenEntity = RefreshToken.builder()
+                .user(user)
+                .token(refreshToken)
+                .expiresAt(Instant.now().plusMillis(refreshExpiration))
+                .revoked(false)
+                .build();
+
+        refreshTokenRepository.save(refreshTokenEntity);
 
         return new LoginStep3Response(
                 "Logowanie pomyślne",
