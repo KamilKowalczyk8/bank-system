@@ -69,5 +69,26 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Odświeżanie sesji (Refresh Token Rotation)", description = "Wymienia ważny Refresh Token na nową parę tokenów (Access i Refresh). Automatycznie unieważnia stary token. Zabezpiecza przed Replay Attack.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Zwraca nową parę tokenów JWT"),
+            @ApiResponse(responseCode = "401", description = "Token odświeżania wygasł, jest nieprawidłowy lub został skradziony (revoked)")
+    })
+    @PostMapping("/refresh")
+    public ResponseEntity<RefreshTokenResponse> refresh(@RequestBody @Valid RefreshTokenRequest request) {
+        RefreshTokenResponse response = authService.refreshToken(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Wylogowywanie (Kill Switch)", description = "Bezpiecznie unieważnia (pali) podany Refresh Token w bazie danych. Operacja idempotentna.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Operacja zakończona sukcesem (nawet jeśli podany token nie istniał)")
+    })
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestBody @Valid LogoutRequest request) {
+        authService.logout(request);
+        return ResponseEntity.ok().build();
+    }
+
 }
 

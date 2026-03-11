@@ -22,9 +22,9 @@ public class LoginAttempt {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false)
+    @Column(name = "success", nullable = false)
     private boolean success;
 
-    @Column(nullable = false)
+    @Column(name = "attempt_time", nullable = false)
     private Instant attemptTime;
 }

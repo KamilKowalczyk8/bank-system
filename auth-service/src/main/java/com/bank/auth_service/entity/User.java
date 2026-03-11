@@ -19,36 +19,41 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "login", unique = true, nullable = false, length = 8)
     private String login;
 
-    @Column(nullable = false)
+    @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @Column(nullable = false)
+    @Column(name = "temp_password", nullable = false)
     private boolean tempPassword;
 
-    @Column(nullable = false)
+    @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
     private UserStatus status;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "role", nullable = false)
     private UserRole role;
 
     //--Bezpieczeństwo
+    @Column(name = "locked_until")
     private Instant lockedUntil;
 
+    @Column(name = "last_login_at")
     private Instant lastLoginAt;
 
+    @Column(name = "password_changed_at")
     private Instant passwordChangedAt;
 
     //--Audyt
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
+
+    @Column(name = "updated_at")
     private Instant updatedAt;
 
 

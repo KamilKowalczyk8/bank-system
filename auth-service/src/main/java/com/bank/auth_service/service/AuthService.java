@@ -147,7 +147,7 @@ public class AuthService {
         session = loginSessionRepository.save(session);
 
         log.info("=== SYMULACJA WYSYŁKI SMS ===");
-        log.info("Wysyłam uuid  {}: Twój kod uuid to {}", session.getId());
+        log.info("Wysyłam uuid. Twój kod uuid to: {}", session.getId());
         log.info("Wysyłam SMS na numer {}: Twój kod logowania to {}", user.getPhoneNumber(), smsCode);
         log.info("=============================");
 
@@ -217,6 +217,58 @@ public class AuthService {
                 refreshToken
         );
 
+    }
+
+
+    @Transactional(noRollbackFor = InvalidCredentialsException.class)
+    public RefreshTokenResponse refreshToken(RefreshTokenRequest request) {
+
+        RefreshToken storedToken = refreshTokenRepository.findByToken(request.refreshToken())
+                .orElseThrow(() -> new InvalidCredentialsException("Nieprawidłowy token odświeżania"));
+
+        User user = storedToken.getUser();
+
+        if (storedToken.isRevoked()) {
+            log.warn("WYKRYTO POTENCJALNY ATAK! Próba użycia unieważnionego tokena dla usera: {}", user.getLogin());
+            refreshTokenRepository.revokeAllUserTokens(user);
+            throw new InvalidCredentialsException("Wykryto nieautoryzowane użycie tokena. Zaloguj się ponownie ze względów bezpieczeństwa.");
+        }
+
+        if (Instant.now().isAfter(storedToken.getExpiresAt())) {
+            storedToken.setRevoked(true);
+            refreshTokenRepository.save(storedToken);
+            throw new InvalidCredentialsException("Token odświeżania wygasł. Zaloguj się ponownie.");
+        }
+
+        storedToken.setRevoked(true);
+        refreshTokenRepository.save(storedToken);
+
+        String newAccesToken = jwtService.generateAccessToken(user);
+        String newRefreshToken = jwtService.generateRefreshToken(user);
+
+        RefreshToken newRefreshTokenEntity = RefreshToken.builder()
+                .user(user)
+                .token(newRefreshToken)
+                .expiresAt(Instant.now().plusMillis(refreshExpiration))
+                .revoked(false)
+                .build();
+
+        refreshTokenRepository.save(newRefreshTokenEntity);
+
+        log.info("Pomyślnie odświeżono tokeny dla usera: {}", user.getLogin());
+
+        return new RefreshTokenResponse(newAccesToken, newRefreshToken);
+    }
+
+    public void logout(LogoutRequest request) {
+        log.info("Rozpoczęto procedurę wylogowania.");
+
+        refreshTokenRepository.findByToken(request.refreshToken())
+                .ifPresent(token -> {
+                    token.setRevoked(true);
+                    refreshTokenRepository.save(token);
+                    log.info("Token unieważniony. Użytkownik {} wylogowany z tego urządzenia.", token.getUser().getLogin());
+                });
     }
 
 
