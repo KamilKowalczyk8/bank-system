@@ -2,6 +2,8 @@ server:
   port: 8081
 
 spring:
+  application:
+    name: auth-service
   datasource:
     url: jdbc:postgresql://localhost:5432/authdb
     username: authuser
@@ -13,8 +15,21 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-  mongodb:
-    uri: mongodb://localhost:27017/authdb
+# ---- ARGON2 KONFIGURACJA ----
+bank:
+  security:
+    argon2:
+      salt-length: 16
+      hash-length: 32
+      parallelism: 1
+      memory: 65536
+      iterations: 3
+
+#Konfiguracaj JWT
+jwt:
+  secret: U3VwZXJUYWpueUtsdWN6QmFua293eURvR2VuZXJvd2FuaWFUb2tlbm93MjAyNiE=
+  expiration: 300000 # Access Token: 5 minut
+  refresh-expiration: 86400000 # Refresh Token: 24 godziny
 
 logging:
   level:
