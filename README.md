@@ -32,7 +32,7 @@ W katalogu `docker/`:
 ```bash
 docker compose up -d
 
-
+```
 ---
 
 ## 🛡️ Architektura Serwisów
