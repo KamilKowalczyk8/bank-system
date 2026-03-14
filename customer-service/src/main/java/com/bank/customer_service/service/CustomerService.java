@@ -1,5 +1,6 @@
 package com.bank.customer_service.service;
 
+import com.bank.customer_service.dto.CustomerProfileResponse;
 import com.bank.customer_service.dto.CustomerRegistrationRequest;
 import com.bank.customer_service.entity.Address;
 import com.bank.customer_service.entity.Customer;
@@ -55,5 +56,32 @@ public class CustomerService {
         log.info("Pomyślnie utworzono profil klienta. Wewnętrzne ID: {}", savedCustomer.getId());
         return savedCustomer.getId();
     }
+
+    @Transactional(readOnly = true)
+    public CustomerProfileResponse getCustomerProfile(String authId) {
+        log.info("Pobieranie profilu dla AuthId: {}", authId);
+
+        Customer customer = customerRepository.findByAuthId(authId)
+                .orElseThrow(() -> new IllegalStateException("Nie znaleziono profilu dla podanego AuthID: " + authId));
+
+        Address address = customer.getAddress();
+
+        return new CustomerProfileResponse(
+                customer.getId(),
+                customer.getFirstName(),
+                customer.getLastName(),
+                customer.getPesel(),
+                customer.getPhoneNumber(),
+                customer.getEmail(),
+                address.getStreet(),
+                address.getBuildingNumber(),
+                address.getApartmentNumber(),
+                address.getCity(),
+                address.getZipCode(),
+                address.getCountry()
+        );
+    }
+
+
 
 }
