@@ -10,10 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -33,6 +30,19 @@ public class AuthController {
         RegisterResponse response = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+
+    @Operation(summary = "Awaryjne usuwanie konta (Saga Rollback)", description = "Fizycznie usuwa konto z bazy danych na podstawie podanego loginu. Endpoint przeznaczony do wycofywania transakcji przez Onboarding-Service w przypadku niepowodzenia rejestracji.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Konto zostało pomyślnie usunięte (No Content)"),
+            @ApiResponse(responseCode = "404", description = "Nie znaleziono konta do usunięcia") // Ten błąd dorzucimy, gdy napiszesz w auth-service GlobalExceptionHandler!
+    })
+    @DeleteMapping("/{authId}")
+    public ResponseEntity<Void> deleteAccountHard(@PathVariable String authId) {
+        authService.deleteAccountHard(authId);
+        return ResponseEntity.noContent().build();
+    }
+
 
     @Operation(summary = "Logowanie - Krok 1 (Weryfikacja NIK)", description = "Weryfikuje poprawność formatu loginu i przygotowuje proces logowania. Chroni przed enumeracją użytkowników.")
     @ApiResponses(value = {

@@ -85,6 +85,17 @@ public class AuthService {
     }
 
 
+    public void deleteAccountHard(String authId) {
+        log.warn("Otrzymano żądanie usunięcia konta dla authId: {}", authId);
+
+        var account = userRepository.findByLogin(authId)
+                .orElseThrow(() -> new IllegalStateException("Nie znaleziono konta do usunięcia dla ID: " + authId));
+
+        userRepository.delete(account);
+        log.info("Konto o ID: {} zostało pomyślnie usunięte z bazy (Saga Rollback).", authId);
+    }
+
+
     public LoginStep1Response verifyLoginStep1(LoginStep1Request request) {
         log.info("Rozpoczęto próbę logowania dla loginu: {}", request.login());
 
