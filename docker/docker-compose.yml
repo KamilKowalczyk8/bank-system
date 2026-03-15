@@ -21,6 +21,20 @@ services:
         volumes:
             - auth-mongo-data:/data/db
 
+
+    customer-postgres:
+        image: postgres:16
+        container_name: customer-postgres
+        ports:
+            - "5455:5432" 
+        environment:
+            POSTGRES_DB: customerdb
+            POSTGRES_USER: custouser
+            POSTGRES_PASSWORD: custopass
+        volumes:
+            - customer-postgres-data:/var/lib/postgresql/data
+
 volumes:
     auth-postgres-data:
     auth-mongo-data:
+    customer-postgres-data:

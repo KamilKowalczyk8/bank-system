@@ -64,6 +64,7 @@ public class AuthService {
         User bankUser = User.builder()
                 .login(login)
                 .phoneNumber(request.phoneNumber())
+                .email(request.email())
                 .passwordHash(hash)
                 .tempPassword(true)
                 .status(UserStatus.PENDING)

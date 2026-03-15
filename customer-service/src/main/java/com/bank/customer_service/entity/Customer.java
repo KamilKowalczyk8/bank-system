@@ -34,6 +34,7 @@ public class Customer {
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Column(name = "id_card_number")

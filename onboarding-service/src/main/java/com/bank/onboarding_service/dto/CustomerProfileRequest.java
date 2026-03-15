@@ -6,6 +6,7 @@ public record CustomerProfileRequest(
         String firstName,
         String lastName,
         String pesel,
+        String email,
 
         //Address
         String phoneNumber,

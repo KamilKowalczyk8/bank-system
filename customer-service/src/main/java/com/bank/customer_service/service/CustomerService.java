@@ -49,6 +49,7 @@ public class CustomerService {
                 .lastName(request.lastName())
                 .pesel(request.pesel())
                 .phoneNumber(request.phoneNumber())
+                .email(request.email())
                 .address(address)
                 .build();
 

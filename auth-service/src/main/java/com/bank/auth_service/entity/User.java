@@ -31,6 +31,9 @@ public class User {
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
+    @Column(name = "email", nullable = false)
+    private String email;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private UserStatus status;

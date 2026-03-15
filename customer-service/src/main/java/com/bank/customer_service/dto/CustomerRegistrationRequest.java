@@ -1,5 +1,6 @@
 package com.bank.customer_service.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -22,6 +23,10 @@ public record CustomerRegistrationRequest(
         @NotBlank(message = "Numer telefonu jest wymagany")
         @Pattern(regexp = "\\d{9}", message = "Numer telefonu musi składać się z 9 cyfr")
         String phoneNumber,
+
+        @NotBlank(message = "Email jest wymagany")
+        @Email(message = "Niepoprawny format adresu email")
+        String email,
 
         //Dane adresowe
 

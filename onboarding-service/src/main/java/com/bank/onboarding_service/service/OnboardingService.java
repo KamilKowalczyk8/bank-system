@@ -37,6 +37,8 @@ public class OnboardingService {
                 request.firstName(),
                 request.lastName(),
                 request.pesel(),
+                request.email(),
+
                 request.phoneNumber(),
                 request.street(),
                 request.buildingNumber(),
@@ -53,6 +55,7 @@ public class OnboardingService {
             customerServiceClient.createCustomerProfile(customerProfileRequest);
             log.info("Sukces! Profil klienta został pomyślnie utworzony. Proces onboardingu zakończony.");
         } catch (Exception e) {
+            log.error("SZCZEGÓŁY BŁĘDU OD CUSTOMER-SERVICE: {}", e.getMessage());
             log.error("BŁĄD! Odrzucono profil klienta. Uruchamiam procedurę kompensacji dla authId: {}", generatedAuthId);
 
             try {

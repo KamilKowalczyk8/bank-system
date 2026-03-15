@@ -1,16 +1,38 @@
 package com.bank.onboarding_service.controller;
 
+import com.bank.onboarding_service.dto.OnboardingRequest;
+import com.bank.onboarding_service.service.OnboardingService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-// TODO 1: Dodaj ścieżkę bazową dla tego kontrolera (np. @RequestMapping("/api/onboarding"))
-// TODO 2: Dodaj adnotację Lomboka do wstrzyknięcia OnboardingService (@RequiredArgsConstructor)
+@RequestMapping("/api/onboarding")
+@RequiredArgsConstructor
 public class OnboardingController {
 
-    // TODO 3: Zadeklaruj prywatne, finalne pole dla OnboardingService
+    private final OnboardingService onboardingService;
 
-    // TODO 4: Stwórz metodę z adnotacją @PostMapping("/register")
-    // TODO 5: W argumencie metody dodaj @Valid oraz @RequestBody dla OnboardingRequest
-    // TODO 6: W ciele metody wywołaj processOnboarding() z Twojego serwisu
-    // TODO 7: Zwróć do klienta status HTTP 201 (Created) z wiadomością o sukcesie
+    @Operation(
+            summary = "Rejestracja nowego klienta (One-Click)",
+            description = "Przyjmuje pełne dane klienta. Tworzy dane logowania w auth-service, a następnie profil w customer-service. W przypadku błędu wycofuje transakcję (Wzorzec Saga)."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Pomyślnie utworzono konto i profil klienta"),
+            @ApiResponse(responseCode = "400", description = "Błąd walidacji danych wejściowych lub proces przerwany")
+    })
+    @PostMapping("/register")
+    public ResponseEntity<Void> register(@RequestBody @Valid OnboardingRequest request) {
+        onboardingService.processsOnboarding(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 }

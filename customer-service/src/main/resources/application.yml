@@ -6,7 +6,7 @@ spring:
     name: customer-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/bank_customer_db
+    url: jdbc:postgresql://localhost:5455/customerdb
     username: custouser
     password: custopass
     driver-class-name: org.postgresql.Driver
@@ -17,4 +17,4 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
