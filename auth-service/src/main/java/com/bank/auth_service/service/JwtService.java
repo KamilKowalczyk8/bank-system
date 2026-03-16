@@ -25,9 +25,14 @@ public class JwtService {
     @Value("${jwt.refresh-expiration}")
     private long refreshExpiration;
 
+
+
     public String generateAccessToken(User user) {
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("role", user.getRole().name());
+        extraClaims.put("token_type", "ACCESS");
+
+        Date now = new Date();
 
         return Jwts.builder()
                 .claims(extraClaims)
@@ -35,18 +40,26 @@ public class JwtService {
                 .issuer("Bank-Auth-Service")
                 .audience().add("Bank-Internal-Network").and()
                 .id(java.util.UUID.randomUUID().toString())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + jwtExpiration))
                 .signWith(getSignKey(), Jwts.SIG.HS256)
                 .compact();
     }
 
     public String generateRefreshToken(User user) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("token_type", "REFRESH");
+
+        Date now = new Date();
+
         return Jwts.builder()
+                .claims(extraClaims)
                 .subject(user.getLogin())
+                .issuer("Bank-Auth-Service")
+                .audience().add("Bank-Internal-Network").and()
                 .id(UUID.randomUUID().toString())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + refreshExpiration))
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + refreshExpiration))
                 .signWith(getSignKey(), Jwts.SIG.HS256)
                 .compact();
     }
@@ -56,3 +69,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
+
+//TODO
+//Redis Blacklist (do wylogowywania)
+//RS256 (kluczach asymetrycznych)

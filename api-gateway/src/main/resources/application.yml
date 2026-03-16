@@ -5,6 +5,14 @@ spring:
   application:
     name: api-gateway
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 logging:
   level:
     org.springframework.cloud.gateway: INFO
+
+jwt:
+  secret: U3VwZXJUYWpueUtsdWN6QmFua293eURvR2VuZXJvd2FuaWFUb2tlbm93MjAyNiE=

@@ -34,6 +34,12 @@ services:
         volumes:
             - customer-postgres-data:/var/lib/postgresql/data
 
+    api-redis:
+        image: redis:7-alpine
+        container_name: api-redis
+        ports:
+            - "6379:6379"
+
 volumes:
     auth-postgres-data:
     auth-mongo-data:

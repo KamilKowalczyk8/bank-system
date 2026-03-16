@@ -16,3 +16,5 @@ public record LoginStep3Request(
         @NotBlank(message = "Kod SMS nie może być pusty")
         String smsCode
 ) {}
+
+
