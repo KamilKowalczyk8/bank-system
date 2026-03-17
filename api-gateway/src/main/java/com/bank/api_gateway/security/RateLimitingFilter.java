@@ -29,7 +29,7 @@ public class RateLimitingFilter implements HandlerFilterFunction<ServerResponse,
                 .map(address -> address.getAddress().getHostAddress())
                 .orElse("unkown-ip");
 
-        String redisKey = "rate_limit" + clientIp;
+        String redisKey = "rate_limit:" + clientIp;
 
         String currentRequestsStr = redisTemplate.opsForValue().get(redisKey);
         int currentRequest = currentRequestsStr != null ? Integer.parseInt(currentRequestsStr) : 0;

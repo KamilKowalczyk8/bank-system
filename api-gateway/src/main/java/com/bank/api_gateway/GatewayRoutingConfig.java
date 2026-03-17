@@ -11,6 +11,7 @@ import org.springframework.web.servlet.function.ServerResponse;
 import static org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions.route;
 import static org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions.http;
 import static org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions.uri;
+import static org.springframework.cloud.gateway.server.mvc.filter.CircuitBreakerFilterFunctions.circuitBreaker;
 
 @Configuration
 public class GatewayRoutingConfig {
@@ -29,6 +30,7 @@ public class GatewayRoutingConfig {
                         .GET("/api/customers/**", http())
                         .before(uri("http://localhost:8082"))
                         .filter(jwtAuthenticationFilter)
+                        .filter(circuitBreaker("customerServiceCB", java.net.URI.create("forward:/fallback/customer")))
                         .build())
                 .and(route("onboarding-service-route")
                         .POST("/api/onboarding/**", http())
@@ -38,7 +40,15 @@ public class GatewayRoutingConfig {
         return routes
                 .filter(rateLimitingFilter)
                 .filter(securityHeadersFilter);
-
-
     }
 }
+
+/* * TODO: [DŁUG TECHNOLOGICZNY - SERVICE DISCOVERY]
+ * 1. Obecnie adresy mikroserwisów (np. http://localhost:8081) są "zahardkodowane" na sztywno.
+ * W środowisku produkcyjnym adresy IP i porty zmieniają się dynamicznie (np. w Dockerze/Kubernetesie).
+ * 2. DOCELOWE ROZWIĄZANIE: Wdrożyć wzorzec Service Discovery (np. Netflix Eureka Server).
+ * Gdy Eureka będzie gotowa, zamienimy sztywne adresy na nazwy serwisów, np.:
+ * z: .before(uri("http://localhost:8081"))
+ * na: .before(uri("lb://auth-service")) // lb = Load Balancer
+ * 3. Do tego czasu pamiętać o ręcznej zmianie portów w razie przenosin na inny serwer.
+ */

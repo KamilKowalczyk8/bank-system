@@ -14,6 +14,7 @@ import org.springframework.web.servlet.function.ServerResponse;
 public class JwtAuthenticationFilter implements HandlerFilterFunction<ServerResponse, ServerResponse> {
 
     private final JwtUtil jwtUtil;
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
@@ -40,10 +41,10 @@ public class JwtAuthenticationFilter implements HandlerFilterFunction<ServerResp
                     .header("X-Correlation-ID", correlationId)
                     .build();
 
-            return next.handle(request);
+            return next.handle(mutatedRequest);
 
         } catch (Exception e) {
-            System.out.println("=== BŁĄD WERYFIKACJI JWT === : " + e.getMessage());
+            log.info("=== BŁĄD WERYFIKACJI JWT === : " + e.getMessage());
 
             String path = request.uri().getPath();
 
