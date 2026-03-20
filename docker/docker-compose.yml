@@ -13,15 +13,6 @@ services:
         volumes:
             - auth-postgres-data:/var/lib/postgresql/data
 
-    auth-mongo:
-        image: mongo:7
-        container_name: auth-mongo
-        ports:
-            - "27017:27017"
-        volumes:
-            - auth-mongo-data:/data/db
-
-
     customer-postgres:
         image: postgres:16
         container_name: customer-postgres
@@ -34,6 +25,30 @@ services:
         volumes:
             - customer-postgres-data:/var/lib/postgresql/data
 
+
+    account-postgres:
+        image: postgres:16
+        container_name: account-postgres
+        ports:
+            - "5456:5432" 
+        environment:
+            POSTGRES_DB: accountdb
+            POSTGRES_USER: accountuser
+            POSTGRES_PASSWORD: accountpass
+        volumes:
+            - account-postgres-data:/var/lib/postgresql/data
+
+    auth-mongo:
+        image: mongo:7
+        container_name: auth-mongo
+        ports:
+            - "27017:27017"
+        volumes:
+            - auth-mongo-data:/data/db
+
+
+    
+
     api-redis:
         image: redis:7-alpine
         container_name: api-redis
@@ -44,3 +59,4 @@ volumes:
     auth-postgres-data:
     auth-mongo-data:
     customer-postgres-data:
+    account-postgres-data:
