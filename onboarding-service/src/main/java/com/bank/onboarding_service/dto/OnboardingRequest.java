@@ -16,6 +16,11 @@ public record OnboardingRequest(
         @Pattern(regexp = "\\d{9}", message = "Numer telefonu musi składać się z 9 cyfr")
         String phoneNumber,
 
+        //dane do account-service
+        @NotBlank(message = "Waluta jest wymagana")
+        @Pattern(regexp = "^(PLN|EUR|USD|GBP)$", message = "Nieobsługiwana waluta. Wybierz: PLN, EUR, USD lub GBP")
+        String currency,
+
         //dane do customer-service
         @NotBlank(message = "Imię jest wymagane")
         String firstName,

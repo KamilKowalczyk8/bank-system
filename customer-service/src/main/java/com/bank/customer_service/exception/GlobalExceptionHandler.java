@@ -14,16 +14,27 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ErrorResponse> handleBusinessException(IllegalStateException ex) {
+    @ExceptionHandler(CustomerAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleCustomerAlreadyExists(CustomerAlreadyExistsException ex) {
 
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.CONFLICT.value(),
-                "Conflict",
+                "Conflict - Data already exists",
                 ex.getMessage()
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCustomerNotFound(CustomerNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "Not Found",
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

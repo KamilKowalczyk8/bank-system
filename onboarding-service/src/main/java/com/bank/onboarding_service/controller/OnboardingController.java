@@ -31,7 +31,7 @@ public class OnboardingController {
     })
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody @Valid OnboardingRequest request) {
-        onboardingService.processsOnboarding(request);
+        onboardingService.processOnboarding(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

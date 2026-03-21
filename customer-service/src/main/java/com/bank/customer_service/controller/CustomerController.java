@@ -40,6 +40,18 @@ public class CustomerController {
                 .body(Map.of("customerId", customerId));
     }
 
+    @Operation(summary = "Twarde usunięcie profilu (Rollback)", description = "Fizycznie i bezpowrotnie usuwa profil klienta z bazy danych na podstawie AuthID. Operacja wykorzystywana głównie przez mechanizmy kompensujące (Saga) w przypadku błędów onboardingu.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Profil został pomyślnie usunięty (No Content)"),
+            @ApiResponse(responseCode = "400", description = "Błąd żądania (np. nie znaleziono profilu do usunięcia)"),
+            @ApiResponse(responseCode = "500", description = "Wewnętrzny błąd serwera podczas usuwania")
+    })
+    @DeleteMapping("/{customerId}")
+    public ResponseEntity<Void> deleteProfileHard(@PathVariable String customerId) {
+        customerService.deleteCustomerHard(customerId);
+        return ResponseEntity.noContent().build();
+    }
+
     @Operation(summary = "Pobranie profilu", description = "Zwraca pełne dane klienta na podstawie identyfikatora AuthID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano profil"),

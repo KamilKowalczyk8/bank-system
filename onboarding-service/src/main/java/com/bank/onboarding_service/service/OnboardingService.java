@@ -1,11 +1,9 @@
 package com.bank.onboarding_service.service;
 
+import com.bank.onboarding_service.client.AccountServiceClient;
 import com.bank.onboarding_service.client.AuthServiceClient;
 import com.bank.onboarding_service.client.CustomerServiceClient;
-import com.bank.onboarding_service.dto.AuthRegistrationRequest;
-import com.bank.onboarding_service.dto.AuthResponse;
-import com.bank.onboarding_service.dto.CustomerProfileRequest;
-import com.bank.onboarding_service.dto.OnboardingRequest;
+import com.bank.onboarding_service.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,8 +15,9 @@ public class OnboardingService {
 
     private final AuthServiceClient authServiceClient;
     private final CustomerServiceClient customerServiceClient;
+    private final AccountServiceClient accountServiceClient;
 
-    public void processsOnboarding(OnboardingRequest request) {
+    public void processOnboarding(OnboardingRequest request) {
         log.info("Rozpoczynamy proces onboardingu dla email: {}", request.email());
 
         AuthRegistrationRequest authRequest = new AuthRegistrationRequest(
@@ -48,22 +47,45 @@ public class OnboardingService {
                 request.country()
         );
 
+        boolean isCustomerProfileCreated = false;
 
         try {
             log.info("2. Wysyłam żądanie utworzenia profilu do customer-service...");
 
             customerServiceClient.createCustomerProfile(customerProfileRequest);
             log.info("Sukces! Profil klienta został pomyślnie utworzony. Proces onboardingu zakończony.");
+
+            isCustomerProfileCreated = true;
+
+            log.info("3. Wysyłam żądanie utworzenia konta bankowego do account-service...");
+            AccountCreateRequest accountCreateRequest = new AccountCreateRequest(
+                    generatedAuthId,
+                    request.currency()
+            );
+
+            AccountResponse accountResponse = accountServiceClient.createAccount(accountCreateRequest);
+            log.info("Sukces! Proces onboardingu zakończony. Wygenerowano IBAN: {}", accountResponse.accountNumber());
+
         } catch (Exception e) {
-            log.error("SZCZEGÓŁY BŁĘDU OD CUSTOMER-SERVICE: {}", e.getMessage());
-            log.error("BŁĄD! Odrzucono profil klienta. Uruchamiam procedurę kompensacji dla authId: {}", generatedAuthId);
+            log.error("SZCZEGÓŁY BŁĘDU (Z kroku 2 lub 3): {}", e.getMessage());
+            log.error("BŁĄD! Przerwano proces. Uruchamiam procedurę kompensacji (rollback) dla authId: {}", generatedAuthId);
+
+            if (isCustomerProfileCreated) {
+                try {
+                    log.info("Cofanie profilu w customer-service...");
+                    customerServiceClient.deleteCustomerProfile(generatedAuthId);
+                } catch (Exception ex) {
+                    log.error("CRITICAL: Nie udało się usunąć profilu klienta dla ID: {}", generatedAuthId, ex);
+                }
+            }
 
             try {
+                log.info("Cofanie konta w auth-service...");
                 authServiceClient.deleteAccount(generatedAuthId);
-                log.info("Rollback udany. Usunięto osierocone konto z auth-service.");
             } catch (Exception rollbackException) {
-                log.error("FATAL ERROR: Rollback się nie udał! Mamy konto-zombie w systemie dla authId: {}", generatedAuthId, rollbackException);
+                log.error("CRITICAL: Nie udało się usunąć konta auth dla ID: {}", generatedAuthId, rollbackException);
             }
+
             throw new IllegalStateException("Proces onboardingu przerwany z powodu błędu w customer-service.");
         }
     }
