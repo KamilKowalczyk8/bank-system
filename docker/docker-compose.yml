@@ -56,9 +56,18 @@ services:
         container_name: bank-kafka
         ports:
             - "9092:9092"
+
+
+
+    #Serwisy -------------------------------------------------------------------------
+
+    notification-service:
+        build: ./notification-service
+        container_name: notification-service
         environment:
-            KAFKA_NODE_ID: 1
-            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+            - SPRING_KAFKA_BOOTSTRAP_SERVERS=bank-kafka:9092
+        depends_on:
+            - kafka
 
 
 volumes:

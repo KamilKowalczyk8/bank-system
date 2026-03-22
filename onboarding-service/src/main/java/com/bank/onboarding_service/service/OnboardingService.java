@@ -4,6 +4,8 @@ import com.bank.onboarding_service.client.AccountServiceClient;
 import com.bank.onboarding_service.client.AuthServiceClient;
 import com.bank.onboarding_service.client.CustomerServiceClient;
 import com.bank.onboarding_service.dto.*;
+import com.bank.onboarding_service.event.CustomerRegisteredEvent;
+import com.bank.onboarding_service.producer.OnboardingEventProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ public class OnboardingService {
     private final AuthServiceClient authServiceClient;
     private final CustomerServiceClient customerServiceClient;
     private final AccountServiceClient accountServiceClient;
+    private final OnboardingEventProducer onboardingEventProducer;
 
     public void processOnboarding(OnboardingRequest request) {
         log.info("Rozpoczynamy proces onboardingu dla email: {}", request.email());
@@ -66,6 +69,15 @@ public class OnboardingService {
             AccountResponse accountResponse = accountServiceClient.createAccount(accountCreateRequest);
             log.info("Sukces! Proces onboardingu zakończony. Wygenerowano IBAN: {}", accountResponse.accountNumber());
 
+            CustomerRegisteredEvent event = new CustomerRegisteredEvent(
+                    generatedAuthId,
+                    request.email(),
+                    request.pesel()
+            );
+
+            onboardingEventProducer.sendCsutomerRegisteredEvent(event);
+            log.info("Wysłano powiadomienie na Kafkę o nowym kliencie.");
+
         } catch (Exception e) {
             log.error("SZCZEGÓŁY BŁĘDU (Z kroku 2 lub 3): {}", e.getMessage());
             log.error("BŁĄD! Przerwano proces. Uruchamiam procedurę kompensacji (rollback) dla authId: {}", generatedAuthId);
@@ -86,7 +98,7 @@ public class OnboardingService {
                 log.error("CRITICAL: Nie udało się usunąć konta auth dla ID: {}", generatedAuthId, rollbackException);
             }
 
-            throw new IllegalStateException("Proces onboardingu przerwany z powodu błędu w customer-service.");
+            throw new IllegalStateException("Proces onboardingu przerwany i wycofany z powodu błędu w mikroserwisach: " + e.getMessage());
         }
     }
 }
