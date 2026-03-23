@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "customer-service", url = "http://localhost:8082")
+@FeignClient(name = "customer-service", url = "${CUSTOMER_SERVICE_URL:http://localhost:8082}")
 public interface CustomerServiceClient {
 
     @PostMapping("/api/customers/profile")

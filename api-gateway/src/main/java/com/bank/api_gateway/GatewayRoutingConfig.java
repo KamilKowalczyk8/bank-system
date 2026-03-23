@@ -3,6 +3,7 @@ package com.bank.api_gateway;
 import com.bank.api_gateway.security.JwtAuthenticationFilter;
 import com.bank.api_gateway.security.RateLimitingFilter;
 import com.bank.api_gateway.security.SecurityHeadersFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.function.RouterFunction;
@@ -16,6 +17,15 @@ import static org.springframework.cloud.gateway.server.mvc.filter.CircuitBreaker
 @Configuration
 public class GatewayRoutingConfig {
 
+    @Value("${services.auth.url}")
+    private String authServiceUrl;
+
+    @Value("${services.customer.url}")
+    private String customerServiceUrl;
+
+    @Value("${services.onboarding.url}")
+    private String onboardingServiceUrl;
+
     @Bean
     public RouterFunction<ServerResponse> gatewayRoutes(
             JwtAuthenticationFilter jwtAuthenticationFilter,
@@ -24,17 +34,17 @@ public class GatewayRoutingConfig {
     ) {
         RouterFunction<ServerResponse> routes = route("auth-service-route")
                 .POST("/auth/**", http())
-                .before(uri("http://localhost:8081"))
+                .before(uri(authServiceUrl))
                 .build()
                 .and(route("customer-service-route")
                         .GET("/api/customers/**", http())
-                        .before(uri("http://localhost:8082"))
+                        .before(uri(customerServiceUrl))
                         .filter(jwtAuthenticationFilter)
                         .filter(circuitBreaker("customerServiceCB", java.net.URI.create("forward:/fallback/customer")))
                         .build())
                 .and(route("onboarding-service-route")
                         .POST("/api/onboarding/**", http())
-                        .before(uri("http://localhost:8083"))
+                        .before(uri(onboardingServiceUrl))
                         .build());
 
         return routes

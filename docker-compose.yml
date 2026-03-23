@@ -1,0 +1,145 @@
+services:
+    auth-postgres:
+        image: postgres:16
+        container_name: auth-postgres
+        environment:
+            POSTGRES_DB: authdb
+            POSTGRES_USER: authuser
+            POSTGRES_PASSWORD: authpass
+        ports:
+            - "5432:5432"
+        volumes:
+            - auth-postgres-data:/var/lib/postgresql/data
+
+    customer-postgres:
+        image: postgres:16
+        container_name: customer-postgres
+        ports:
+            - "5455:5432"
+        environment:
+            POSTGRES_DB: customerdb
+            POSTGRES_USER: custouser
+            POSTGRES_PASSWORD: custopass
+        volumes:
+            - customer-postgres-data:/var/lib/postgresql/data
+
+    account-postgres:
+        image: postgres:16
+        container_name: account-postgres
+        ports:
+            - "5456:5432"
+        environment:
+            POSTGRES_DB: accountdb
+            POSTGRES_USER: accountuser
+            POSTGRES_PASSWORD: accountpass
+        volumes:
+            - account-postgres-data:/var/lib/postgresql/data
+
+    api-redis:
+        image: redis:7-alpine
+        container_name: api-redis
+        ports:
+            - "6379:6379"
+
+    kafka:
+        image: confluentinc/confluent-local:7.5.0
+        container_name: bank-kafka
+        ports:
+            - "9092:9092"
+            - "29092:29092"
+        environment:
+            KAFKA_ADVERTISED_LISTENERS: INTERNAL://bank-kafka:29092,EXTERNAL://localhost:9092
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+            KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+            KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:29093
+
+    # --- serwisy -----------------------------------------------
+
+    auth-service:
+        build: ./auth-service
+        container_name: auth-service
+        ports:
+            - "8081:8081"
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://auth-postgres:5432/authdb
+            - SPRING_DATASOURCE_USERNAME=authuser
+            - SPRING_DATASOURCE_PASSWORD=authpass
+        depends_on:
+            - auth-postgres
+
+    customer-service:
+        build: ./customer-service
+        container_name: customer-service
+        ports:
+            - "8082:8082"
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://customer-postgres:5432/customerdb
+            - SPRING_DATASOURCE_USERNAME=custouser
+            - SPRING_DATASOURCE_PASSWORD=custopass
+        depends_on:
+            - customer-postgres
+
+    account-service:
+        build: ./account-service
+        container_name: account-service
+        ports:
+            - "8084:8084"
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://account-postgres:5432/accountdb
+            - SPRING_DATASOURCE_USERNAME=accountuser
+            - SPRING_DATASOURCE_PASSWORD=accountpass
+        depends_on:
+            - account-postgres
+
+    onboarding-service:
+        build: ./onboarding-service
+        container_name: onboarding-service
+        ports:
+            - "8083:8083"
+        environment:
+            - SPRING_KAFKA_BOOTSTRAP_SERVERS=bank-kafka:29092
+            - AUTH_SERVICE_URL=http://auth-service:8081
+            - CUSTOMER_SERVICE_URL=http://customer-service:8082
+            - ACCOUNT_SERVICE_URL=http://account-service:8084
+        depends_on:
+            - kafka
+            - auth-service
+            - customer-service
+            - account-service
+
+    api-gateway:
+        build: ./api-gateway
+        container_name: api-gateway
+        ports:
+            - "8080:8080"
+        environment:
+            - SPRING_DATA_REDIS_HOST=api-redis
+            - SPRING_DATA_REDIS_PORT=6379
+            - SERVICES_AUTH_URL=http://auth-service:8081
+            - SERVICES_CUSTOMER_URL=http://customer-service:8082
+            - SERVICES_ONBOARDING_URL=http://onboarding-service:8083
+            - SPRING_CLOUD_GATEWAY_ROUTES_0_URI=http://auth-service:8081
+            - SPRING_CLOUD_GATEWAY_ROUTES_1_URI=http://customer-service:8082
+            - SPRING_CLOUD_GATEWAY_ROUTES_2_URI=http://onboarding-service:8083
+        depends_on:
+            - api-redis
+            - auth-service
+            - customer-service
+            - account-service
+            - onboarding-service
+
+    notification-service:
+        build: ./notification-service
+        container_name: notification-service
+        ports:
+            - "8085:8085"
+        environment:
+            - SPRING_KAFKA_BOOTSTRAP_SERVERS=bank-kafka:29092
+        depends_on:
+            - kafka
+
+volumes:
+    auth-postgres-data:
+    customer-postgres-data:
+    account-postgres-data:
