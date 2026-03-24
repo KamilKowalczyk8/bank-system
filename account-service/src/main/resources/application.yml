@@ -5,11 +5,8 @@ spring:
   application:
     name: account-service
 
-  datasource:
-    url: jdbc:postgresql://localhost:5456/accountdb
-    username: accountuser
-    password: accountpass
-    driver-class-name: org.postgresql.Driver
+  profiles:
+    active: local
 
   jpa:
     hibernate:

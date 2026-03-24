@@ -5,11 +5,8 @@ spring:
   application:
     name: customer-service
 
-  datasource:
-    url: jdbc:postgresql://localhost:5455/customerdb
-    username: custouser
-    password: custopass
-    driver-class-name: org.postgresql.Driver
+  profiles:
+    active: local
 
   jpa:
     hibernate:

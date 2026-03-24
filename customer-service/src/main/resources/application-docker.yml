@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://customer-postgres:5432/customerdb
+    username: custouser
+    password: custopass
+    driver-class-name: org.postgresql.Driver

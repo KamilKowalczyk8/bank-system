@@ -1,0 +1,13 @@
+spring:
+  kafka:
+    bootstrap-servers: bank-kafka:29092
+
+  mail:
+    host: mailhog
+    port: 1025
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false

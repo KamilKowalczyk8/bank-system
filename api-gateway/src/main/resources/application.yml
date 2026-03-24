@@ -4,11 +4,8 @@ server:
 spring:
   application:
     name: api-gateway
-
-  data:
-    redis:
-      host: api-redis
-      port: 6379
+  profiles:
+    active: local
 
 logging:
   level:
@@ -16,11 +13,3 @@ logging:
 
 jwt:
   secret: U3VwZXJUYWpueUtsdWN6QmFua293eURvR2VuZXJvd2FuaWFUb2tlbm93MjAyNiE=
-
-services:
-  auth:
-    url: http://auth-service:8081
-  customer:
-    url: http://customer-service:8082
-  onboarding:
-    url: http://onboarding-service:8083

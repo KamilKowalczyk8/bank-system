@@ -5,8 +5,10 @@ spring:
   application:
     name: onboarding-service
 
+  profiles:
+    active: local
+
   kafka:
-    bootstrap-servers: localhost:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
