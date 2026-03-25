@@ -1,0 +1,25 @@
+server:
+  port: 8086
+
+spring:
+  kafka:
+    bootstrap-servers: bank-kafka:29092
+    consumer:
+      group-id: ai-analyzer-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+  data:
+    redis:
+      host: api-redis
+      port: 6379
+
+  ai:
+    ollama:
+      base-url: http://host.docker.internal:11434
+      chat:
+        options:
+          model: phi3:mini

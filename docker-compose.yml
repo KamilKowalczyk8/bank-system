@@ -159,6 +159,15 @@ services:
         depends_on:
             - kafka
 
+    ai-analyzer-service:
+        build:
+            context: ./ai-analyzer-service
+        container_name: ai-analyzer-service
+        ports:
+            - "8086:8086"
+        environment:
+            - SPRING_PROFILES_ACTIVE=docker
+
 volumes:
     auth-postgres-data:
     customer-postgres-data:
