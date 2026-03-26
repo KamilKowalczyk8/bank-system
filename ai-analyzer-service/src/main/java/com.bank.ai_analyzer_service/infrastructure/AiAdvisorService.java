@@ -19,12 +19,12 @@ public class AiAdvisorService {
         log.info("Wysyłam do lokalnego AI błąd z serwisu: {}", event.serviceName());
 
         String prompt = String.format(
-                "Jesteś ekspertem Java, Spring Boot i znasz się perfekcyjnie na błędnych logach serwisów. Przeanalizuj poniższy błąd aplikacji.\n" +
-                "Mikroserwis: %s\n" +
-                "Czas: %s\n" +
-                "Komunikat błędu: %s\n" +
+                "You are an expert Java and Spring Boot software engineer. Analyze the following application error.\n" +
+                "Microservice: %s\n" +
+                "Time: %s\n" +
+                "Error Message: %s\n" +
                 "Stack Trace: %s\n\n" +
-                "Napisz krótko, co jest przyczyną i podaj jednoznaczne rozwiązanie.",
+                "Provide a short, precise explanation of the root cause and a concrete solution. Keep it highly technical and concise.",
                 event.serviceName(), event.timestamp(), event.errorMessage(), event.stackTrace()
         );
 
