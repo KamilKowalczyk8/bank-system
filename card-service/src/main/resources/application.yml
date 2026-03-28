@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: card-service
+  profiles:
+    active: local
+
+bank:
+  card:
+    default-validity-years: 3
+    default-daily-limit: 5000.00
+  security:
+    argon2:
+      salt-length: 16
+      hash-length: 32
+      parallelism: 1
+      memory: 65536
+      iterations: 3

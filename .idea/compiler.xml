@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
+        <module name="bank-common" />
         <module name="ai-analyzer-service" />
         <module name="notification-service" />
       </profile>
@@ -17,10 +18,27 @@
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
         </processorPath>
-        <module name="auth-service" />
+        <module name="onboarding-service" />
+      </profile>
+      <profile name="Annotation profile for customer-service" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+        </processorPath>
         <module name="account-service" />
         <module name="customer-service" />
-        <module name="onboarding-service" />
+        <module name="auth-service" />
+      </profile>
+      <profile name="Annotation profile for card-service" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.44/lombok-1.18.44.jar" />
+        </processorPath>
+        <module name="card-service" />
       </profile>
     </annotationProcessing>
   </component>
@@ -30,6 +48,8 @@
       <module name="ai-analyzer-service" options="-parameters" />
       <module name="api-gateway" options="-parameters" />
       <module name="auth-service" options="-parameters" />
+      <module name="bank-common" options="" />
+      <module name="card-service" options="-parameters" />
       <module name="customer-service" options="-parameters" />
       <module name="notification-service" options="-parameters" />
       <module name="onboarding-service" options="-parameters" />

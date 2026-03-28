@@ -50,6 +50,23 @@ services:
             timeout: 5s
             retries: 5
 
+    card-postgres:
+        image: postgres:16
+        container_name: card-postgres
+        ports:
+            - "5458:5432"
+        environment:
+            POSTGRES_DB: carddb
+            POSTGRES_USER: carduser
+            POSTGRES_PASSWORD: cardpass
+        volumes:
+            - card-postgres-data:/var/lib/postgresql/data
+        healthcheck:
+            test: [ "CMD-SHELL", "pg_isready -U carduser -d carddb" ]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+
     api-redis:
         image: redis:7-alpine
         container_name: api-redis
@@ -167,6 +184,19 @@ services:
             - "8086:8086"
         environment:
             - SPRING_PROFILES_ACTIVE=docker
+
+    card-service:
+        build: ./card-service
+        container_name: card-service
+        ports:
+            - "8087:8087"
+        environment:
+            - SPRING_PROFILES_ACTIVE=docker
+        depends_on:
+            card-postgres:
+                condition: service_healthy
+            kafka:
+                condition: service_started
 
 volumes:
     auth-postgres-data:
