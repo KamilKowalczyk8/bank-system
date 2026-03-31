@@ -14,14 +14,19 @@ public class CardFactory {
         this.defaultDailyLimit = defaultDailyLimit;
     }
 
-    public Card createNew(UUID accountId, CardNumber cardNumber, String pinHash) {
+    public LocalDateTime calculateExpiryDate() {
+        return LocalDateTime.now().plusYears(defaultValidityYears);
+    }
+
+    public Card createNew(UUID accountId, CardNumber cardNumber, String pinHash, LocalDateTime expiryDate, String cvv) {
         return new Card(
                 UUID.randomUUID(),
                 cardNumber,
                 accountId,
-                LocalDateTime.now().plusYears(defaultValidityYears),
+                expiryDate,
                 pinHash,
-                defaultDailyLimit
+                defaultDailyLimit,
+                cvv
         );
     }
 }

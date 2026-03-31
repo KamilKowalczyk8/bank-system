@@ -54,7 +54,8 @@ public class CardRepositoryAdapter implements CardRepository {
                 entity.getAccountId(),
                 entity.getExpiryDate(),
                 entity.getPinHash(),
-                entity.getDailyLimit()
+                entity.getDailyLimit(),
+                "***"
         );
     }
 

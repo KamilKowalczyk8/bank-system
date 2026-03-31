@@ -13,8 +13,9 @@ public class Card {
     private final LocalDateTime expiryDate;
     private final String pinHash;
     private BigDecimal dailyLimit;
+    private final String cvv;
 
-    public Card(UUID id, CardNumber cardNumber, UUID accountId, LocalDateTime expiryDate, String pinHash, BigDecimal dailyLimit) {
+    public Card(UUID id, CardNumber cardNumber, UUID accountId, LocalDateTime expiryDate, String pinHash, BigDecimal dailyLimit, String cvv) {
         if (dailyLimit == null || dailyLimit.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Limit dzienny karty musi być większy niż zero!");
         }
@@ -29,6 +30,7 @@ public class Card {
         this.expiryDate = expiryDate;
         this.pinHash = pinHash;
         this.dailyLimit = dailyLimit;
+        this.cvv = cvv;
     }
 
     public void block() {
@@ -55,5 +57,6 @@ public class Card {
     public LocalDateTime getExpiryDate() { return expiryDate; }
     public String getPinHash() { return pinHash; }
     public BigDecimal getDailyLimit() { return dailyLimit; }
+    public String getCvv() { return cvv; }
 
 }
