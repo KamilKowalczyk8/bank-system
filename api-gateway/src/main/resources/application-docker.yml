@@ -11,3 +11,5 @@ services:
     url: http://customer-service:8082
   onboarding:
     url: http://onboarding-service:8083
+  card:
+    url: http://card-service:8087

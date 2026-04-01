@@ -26,6 +26,9 @@ public class GatewayRoutingConfig {
     @Value("${services.onboarding.url}")
     private String onboardingServiceUrl;
 
+    @Value("${services.card.url}")
+    private String cardServiceUrl;
+
     @Bean
     public RouterFunction<ServerResponse> gatewayRoutes(
             JwtAuthenticationFilter jwtAuthenticationFilter,
@@ -45,6 +48,11 @@ public class GatewayRoutingConfig {
                 .and(route("onboarding-service-route")
                         .POST("/api/onboarding/**", http())
                         .before(uri(onboardingServiceUrl))
+                        .build())
+                .and(route("card-service-route")
+                        .POST("/api/cards/**", http())
+                        .before(uri(cardServiceUrl))
+                        .filter(jwtAuthenticationFilter)
                         .build());
 
         return routes

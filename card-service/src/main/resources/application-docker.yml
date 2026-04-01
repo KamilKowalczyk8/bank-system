@@ -31,3 +31,7 @@ bank:
       parallelism: 1
       memory: 65536
       iterations: 3
+
+services:
+  customer:
+    url: http://customer-service:8082

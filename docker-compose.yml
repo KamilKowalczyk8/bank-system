@@ -202,3 +202,4 @@ volumes:
     auth-postgres-data:
     customer-postgres-data:
     account-postgres-data:
+    card-postgres-data:
