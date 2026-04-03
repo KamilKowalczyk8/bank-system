@@ -1,4 +1,4 @@
-package com.bank.onboarding_service.event;
+package com.bank.common.onboarding_service.event;
 
 public record CustomerRegisteredEvent(
         String authId,

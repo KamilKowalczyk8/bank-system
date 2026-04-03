@@ -1,6 +1,6 @@
 package com.bank.common.onboarding_service.producer;
 
-import com.bank.onboarding_service.event.CustomerRegisteredEvent;
+import com.bank.common.onboarding_service.event.CustomerRegisteredEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;

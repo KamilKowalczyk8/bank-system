@@ -1,4 +1,4 @@
-package com.bank.onboarding_service.dto;
+package com.bank.common.onboarding_service.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

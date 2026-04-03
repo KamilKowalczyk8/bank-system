@@ -1,6 +1,6 @@
 package com.bank.common.onboarding_service.controller;
 
-import com.bank.onboarding_service.dto.OnboardingRequest;
+import com.bank.common.onboarding_service.dto.OnboardingRequest;
 import com.bank.common.onboarding_service.service.OnboardingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
