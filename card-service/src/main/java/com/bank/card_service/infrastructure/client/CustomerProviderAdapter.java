@@ -1,9 +1,11 @@
 package com.bank.card_service.infrastructure.client;
 
 import com.bank.card_service.application.port.out.CustomerProvider;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+@Component
 public class CustomerProviderAdapter implements CustomerProvider {
 
     private final CustomerFeignClient customerFeignClient;

@@ -31,6 +31,7 @@ bank:
       parallelism: 1
       memory: 65536
       iterations: 3
+    cvv-secret-key: "kP9!sA7zQ4#Lm82@VtR1wX$eH6^bN0fG"
 
 services:
   customer:
