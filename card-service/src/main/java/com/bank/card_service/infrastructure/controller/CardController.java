@@ -1,7 +1,7 @@
 package com.bank.card_service.infrastructure.controller;
 
+import com.bank.card_service.application.service.CreateCardResult;
 import com.bank.card_service.application.service.CreateCardUseCase;
-import com.bank.card_service.domain.Card;
 import com.bank.card_service.infrastructure.dto.CardResponse;
 import com.bank.card_service.infrastructure.dto.CreateCardRequest;
 import jakarta.validation.Valid;
@@ -26,18 +26,12 @@ public class CardController {
     public ResponseEntity<CardResponse> createCard(
             @Valid @RequestBody CreateCardRequest request
     ) {
-        Card newCard = createCardUseCase.execute(request.accountId(), request.pin());
+        CreateCardResult result = createCardUseCase.execute(request.accountId(), request.pin());
 
-        CardResponse cardResponse = new CardResponse(
-                newCard.getId(),
-                newCard.getCardNumber().getValue(),
-                newCard.getStatus().name(),
-                newCard.getExpiryDate(),
-                newCard.getDailyLimit(),
-                newCard.getCvv()
-        );
+        CardResponse response = CardResponse.fromDomain(result.card(), result.rawCvv());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(cardResponse);
-
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+
 }

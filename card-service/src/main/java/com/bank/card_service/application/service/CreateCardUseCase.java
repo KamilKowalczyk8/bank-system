@@ -38,7 +38,7 @@ public class CreateCardUseCase {
         this.customerProvider = customerProvider;
     }
 
-    public Card execute(UUID accountId, String rawPin) {
+    public CreateCardResult execute(UUID accountId, String rawPin) {
         String rawCardNumber = cardNumberGenerator.generate();
 
         CardNumber safeCardNumber = new CardNumber(rawCardNumber);
@@ -68,7 +68,7 @@ public class CreateCardUseCase {
 
         cardEventPublisher.publishCardCreated(event);
 
-        return savedCard;
+        return new CreateCardResult(savedCard, generatedCvv);
     }
 
 
