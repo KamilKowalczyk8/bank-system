@@ -1,6 +1,7 @@
 package com.bank.card_service.infrastructure.config;
 
 import com.bank.card_service.application.port.out.*;
+import com.bank.card_service.application.service.ActivateCardUseCase;
 import com.bank.card_service.application.service.CreateCardUseCase;
 import com.bank.card_service.domain.CardFactory;
 import com.bank.card_service.domain.CardRepository;
@@ -28,6 +29,13 @@ public class UseCaseConfig {
                 cvvGenerator,
                 cardEventPublisher,
                 customerProvider
+        );
+    }
+
+    @Bean
+    public ActivateCardUseCase activateCardUseCase(CardRepository cardRepository) {
+        return new ActivateCardUseCase(
+                cardRepository
         );
     }
 }

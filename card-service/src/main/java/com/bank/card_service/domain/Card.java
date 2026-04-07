@@ -44,6 +44,9 @@ public class Card {
     }
 
     public void activate() {
+        if (this.status != CardStatus.ACTIVE) {
+            throw new IllegalStateException("Karta jest już aktywna");
+        }
         if (this.status != CardStatus.CREATED) {
             throw new IllegalStateException("Można aktywować tylko nowo utworzoną kartę!");
         }

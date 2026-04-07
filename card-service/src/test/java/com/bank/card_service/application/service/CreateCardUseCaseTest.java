@@ -62,10 +62,10 @@ class CreateCardUseCaseTest {
         when(cardRepository.save(fakeCard)).thenReturn(fakeCard);
         when(customerProvider.getCustomerEmail(accountId)).thenReturn(customerEmail);
 
-        Card result = createCardUseCase.execute(accountId, rawPin);
+        CreateCardResult result = createCardUseCase.execute(accountId, rawPin);
 
         assertNotNull(result, "Wynik nie może być nullem");
-        assertEquals(fakeCard.getId(), result.getId(),"Powinna zostać zwrócona wygenerowana karta");
+        assertEquals(fakeCard.getId(), result.card().getId(),"Powinna zostać zwrócona wygenerowana karta");
 
         verify(cardRepository).existsByCardNumber(any(CardNumber.class));
         verify(cardRepository).save(fakeCard);
