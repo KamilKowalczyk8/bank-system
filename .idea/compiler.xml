@@ -31,15 +31,6 @@
         <module name="customer-service" />
         <module name="auth-service" />
       </profile>
-      <profile name="Annotation profile for card-service" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.32/lombok-1.18.32.jar" />
-        </processorPath>
-        <module name="card-service" />
-      </profile>
       <profile name="Annotation profile for payment-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -48,6 +39,7 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.44/lombok-1.18.44.jar" />
         </processorPath>
         <module name="payment-service" />
+        <module name="card-service" />
       </profile>
     </annotationProcessing>
   </component>

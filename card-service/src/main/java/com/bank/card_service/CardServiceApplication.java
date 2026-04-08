@@ -16,7 +16,7 @@ public class CardServiceApplication {
 /*
 TODO: Card-Service
 
-	-metode do aktywacji karty
+	-wysyłanie maila o stworzeniu karty trzeba przekierować do notification i on dopieor ywysła maila
 
 
 		[ ] 1. CQRS — Pobieranie karty (GET)
