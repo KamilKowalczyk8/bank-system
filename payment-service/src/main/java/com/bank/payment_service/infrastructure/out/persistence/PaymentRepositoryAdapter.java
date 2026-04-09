@@ -1,4 +1,4 @@
-package com.bank.payment_service.application.port.out.persistence;
+package com.bank.payment_service.infrastructure.out.persistence;
 
 import com.bank.payment_service.application.port.out.PaymentRepository;
 import com.bank.payment_service.domain.*;

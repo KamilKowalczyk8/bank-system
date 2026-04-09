@@ -16,7 +16,7 @@ public class CreatePaymentUseCase {
 
     public Payment execute(CreatePaymentCommand command) {
         Money money = new Money(command.amount(), command.currency());
-        PaymentType paymentType = PaymentType.valueOf(command.type());
+        PaymentType paymentType = command.type();
 
         Payment payment = new Payment(
                 command.sourceAccountId(),

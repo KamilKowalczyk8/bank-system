@@ -43,7 +43,17 @@ public class Payment {
         this.status = PaymentStatus.PENDING;
     }
 
+    public void complete() {
+        if (this.status != PaymentStatus.PENDING) {
+            throw new IllegalStateException("Tylko przelew w stanie PENDING może zostać zakończony.");
+        }
+        this.status = PaymentStatus.COMPLETED;
+    }
+
     public void fail() {
+        if (this.status != PaymentStatus.PENDING && this.status != PaymentStatus.INITIATED) {
+            throw new IllegalStateException("Nie można odrzucić przelewu, który jest już zakończony.");
+        }
         this.status = PaymentStatus.FAILED;
     }
 

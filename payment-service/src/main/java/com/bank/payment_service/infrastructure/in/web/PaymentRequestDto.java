@@ -1,6 +1,8 @@
 package com.bank.payment_service.infrastructure.in.web;
 
 import com.bank.payment_service.application.port.in.CreatePaymentCommand;
+import com.bank.payment_service.domain.Currency;
+import com.bank.payment_service.domain.PaymentType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,12 +31,12 @@ public record PaymentRequestDto(
         @Schema(description = "Waluta (np. PLN, EUR, USD)", example = "PLN")
         @NotBlank(message = "Waluta jest wymagana.")
         @Pattern(regexp = "^(PLN|EUR|USD)$", message = "Obsługiwane waluty to wyłącznie PLN, EUR lub USD.")
-        String currency,
+        Currency currency,
 
         @Schema(description = "Typ płatności: TRANSFER lub CARD_PAYMENT", example = "TRANSFER")
         @NotBlank(message = "Typ płatności jest wymagany.")
         @Pattern(regexp = "^(TRANSFER|CARD_PAYMENT)$", message = "Niedozwolony typ płatności. Wybierz TRANSFER lub CARD_PAYMENT.")
-        String type
+        PaymentType type
 ) {
     public CreatePaymentCommand toCommand() {
         return new CreatePaymentCommand(
