@@ -9,8 +9,9 @@ import com.bank.common.account_service.infrastructure.repository.AccountReposito
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@Transactional
+import java.math.BigDecimal;
+import java.util.UUID;
+
 public class AccountApplicationService {
 
     private final AccountRepository accountRepository;
@@ -23,18 +24,29 @@ public class AccountApplicationService {
 
     public Account createAccount(String customerId, Currency currency) {
         Long sequenceNumber = accountRepository.getNextAccountNumberSequence();
-
         String formattedSequence = String.format("%016d", sequenceNumber);
-
         AccountNumber accountNumber = AccountNumber.generateNew(formattedSequence);
 
         Account newAccount = new Account(customerId, accountNumber, currency);
-
         AccountEntity entityToSave = accountMapper.toEntity(newAccount);
-
         accountRepository.save(entityToSave);
 
         return newAccount;
+    }
+
+    public void reserveFunds(String accountId, BigDecimal amount) {
+        UUID parseId = UUID.fromString(accountId);
+
+        AccountEntity entity = accountRepository.findById(parseId)
+                .orElseThrow(() -> new IllegalArgumentException("Nie znaleziono konta o ID: " + accountId));
+
+        Account account = accountMapper.toDomain(entity);
+
+        account.reserve(amount);
+
+        AccountEntity entityToUpdate = accountMapper.toEntity(account);
+
+        accountRepository.save(entityToUpdate);
     }
 
 }

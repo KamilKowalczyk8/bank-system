@@ -28,6 +28,36 @@ public class Account {
         this.createdAt = Instant.now();
     }
 
+    private Account(UUID accountId, String customerId, AccountNumber accountNumber,
+                    BigDecimal balance, Currency currency, AccountStatus status, Instant createdAt) {
+        this.accountId = accountId;
+        this.customerId = customerId;
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+        this.currency = currency;
+        this.status = status;
+        this.createdAt = createdAt;
+    }
+
+    public static Account restore(UUID accountId,
+                                  String customerId,
+                                  AccountNumber accountNumber,
+                                  BigDecimal balance,
+                                  Currency currency,
+                                  AccountStatus status,
+                                  Instant createdAt
+    ) {
+        return new Account(
+                accountId,
+                customerId,
+                accountNumber,
+                balance,
+                currency,
+                status,
+                createdAt
+        );
+    }
+
     public void deposit(BigDecimal amount) {
         if (this.status != AccountStatus.ACTIVE) {
             throw new IllegalStateException("Odmowa. Konto nie jest aktywne (Status: " + this.status + ").");
@@ -56,6 +86,20 @@ public class Account {
             throw new IllegalStateException("Odmowa. Nie można zamknąć konta, na którym znajdują się środki.");
         }
         this.status = AccountStatus.BLOCKED;
+    }
+
+    public void reserve(BigDecimal amountToReserve) {
+        if (this.status != AccountStatus.ACTIVE) {
+            throw new IllegalStateException("Odmowa. Konto nie jest aktywne (Status: " + this.status + ").");
+        }
+        if (amountToReserve == null || amountToReserve.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Kwota do rezerwacji musi być większa od zera.");
+        }
+        if (this.balance.compareTo(amountToReserve) < 0) {
+            throw new IllegalStateException("Brak wystarczających środków na koncie! Obecne saldo: " + this.balance);
+        }
+        // w przyszlosci "blockedBalance"
+        this.balance = this.balance.subtract(amountToReserve);
     }
 
 
