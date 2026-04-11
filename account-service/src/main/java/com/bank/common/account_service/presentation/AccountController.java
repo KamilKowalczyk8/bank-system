@@ -49,10 +49,9 @@ public class AccountController {
     })
     public ResponseEntity<Void> reserveFunds(
             @PathVariable("accountId") String accountId,
-            @RequestBody ReserveRequest request) {
-
+            @RequestBody ReserveRequest request
+    ) {
         accountApplicationService.reserveFunds(accountId, request.amount());
-
         return ResponseEntity.ok().build();
     }
 

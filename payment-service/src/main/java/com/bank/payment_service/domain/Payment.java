@@ -57,6 +57,13 @@ public class Payment {
         this.status = PaymentStatus.FAILED;
     }
 
+    public void rejectAsFraud() {
+        if (this.status != PaymentStatus.PENDING) {
+            throw new IllegalStateException("Można odrzucić tylko płatność w procesie (PENDING)");
+        }
+        this.status = PaymentStatus.REJECTED_FRAUD;
+    }
+
     public UUID getId() { return id; }
     public UUID getSourceAccountId() { return sourceAccountId; }
     public UUID getDestinationAccountId() { return destinationAccountId; }

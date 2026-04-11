@@ -3,6 +3,7 @@ package com.bank.payment_service.infrastructure.out.persistence;
 import com.bank.payment_service.application.port.out.PaymentRepository;
 import com.bank.payment_service.domain.*;
 import com.bank.payment_service.infrastructure.entity.PaymentEntity;
+import com.bank.payment_service.infrastructure.mapper.PaymentMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -12,46 +13,25 @@ import java.util.UUID;
 public class PaymentRepositoryAdapter implements PaymentRepository {
 
     private final SpringDataPaymentRepository repository;
+    private final PaymentMapper paymentMapper;
 
-    public PaymentRepositoryAdapter(SpringDataPaymentRepository repository) {
+    public PaymentRepositoryAdapter(SpringDataPaymentRepository repository, PaymentMapper paymentMapper) {
         this.repository = repository;
-    }
-
-    @Override
-    public Payment save(Payment payment) {
-        PaymentEntity entity = PaymentEntity.builder()
-                .id(payment.getId())
-                .sourceAccountId(payment.getSourceAccountId())
-                .destinationAccountId(payment.getDestinationAccountId())
-                .amount(payment.getMoney().amount())
-                .currency(payment.getMoney().currency().name())
-                .type(payment.getType())
-                .status(payment.getStatus())
-                .createdAt(payment.getCreatedAt())
-                .build();
-
-        PaymentEntity savedEntity = repository.save(entity);
-
-        return mapToDomain(savedEntity);
+        this.paymentMapper = paymentMapper;
     }
 
     @Override
     public Optional<Payment> findById(UUID id) {
-        return repository.findById(id).map(this::mapToDomain);
+        return repository.findById(id)
+                .map(paymentMapper::toDomain);
     }
 
-    private Payment mapToDomain(PaymentEntity entity) {
-        Currency currency = Currency.valueOf(entity.getCurrency());
-        Money money = new Money(entity.getAmount(), currency);
+    @Override
+    public Payment save(Payment payment) {
+        PaymentEntity entity = paymentMapper.toEntity(payment);
 
-        return new Payment(
-                entity.getId(),
-                entity.getSourceAccountId(),
-                entity.getDestinationAccountId(),
-                money,
-                entity.getType(),
-                entity.getStatus(),
-                entity.getCreatedAt()
-        );
+        PaymentEntity savedEntity = repository.save(entity);
+
+        return paymentMapper.toDomain(savedEntity);
     }
 }

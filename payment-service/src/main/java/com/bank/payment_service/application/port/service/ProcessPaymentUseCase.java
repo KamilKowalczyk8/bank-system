@@ -24,8 +24,18 @@ public class ProcessPaymentUseCase {
                 .orElseThrow(() -> new IllegalArgumentException("Nie znaleziono płatności o ID: " + paymentId));
 
         payment.markAsPending();
-
         payment = paymentRepository.save(payment);
+
+        /*
+        boolean isFraudulent = fraudCheckPort.evelauteRisk(payment);
+
+        if (isFraudulent) {
+            payment.rejectAsFraud();
+            paymentRepository.save(payment);
+            //kafka zdarzenie oszust
+            return;
+        }
+        */
 
         boolean externalSystemSuccess = accountOperationPort.reserveFunds(
                 payment.getSourceAccountId(),

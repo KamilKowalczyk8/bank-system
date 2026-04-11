@@ -1,4 +1,4 @@
-package com.bank.payment_service.infrastructure.out.external;
+package com.bank.payment_service.infrastructure.out.external.account;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -1,5 +1,6 @@
 package com.bank.payment_service.infrastructure.entity;
 
+import com.bank.payment_service.domain.Currency;
 import com.bank.payment_service.domain.PaymentStatus;
 import com.bank.payment_service.domain.PaymentType;
 import jakarta.persistence.*;
@@ -29,18 +30,19 @@ public class PaymentEntity {
     @Column(name = "destination_account_id", nullable = false)
     private UUID destinationAccountId;
 
-    @Column(nullable = false)
+    @Column(name = "amount", nullable = false)
     private BigDecimal amount;
 
-    @Column(nullable = false, length = 3)
-    private String currency;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "currency", nullable = false)
+    private Currency currency;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "payment_type", nullable = false)
     private PaymentType type;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "payment_status", nullable = false)
     private PaymentStatus status;
 
     @CreationTimestamp

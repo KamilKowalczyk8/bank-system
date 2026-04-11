@@ -6,8 +6,8 @@ import com.bank.common.account_service.domain.Currency;
 import com.bank.common.account_service.infrastructure.entity.AccountEntity;
 import com.bank.common.account_service.infrastructure.mapper.AccountMapper;
 import com.bank.common.account_service.infrastructure.repository.AccountRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -22,6 +22,7 @@ public class AccountApplicationService {
         this.accountRepository = accountRepository;
     }
 
+    @Transactional
     public Account createAccount(String customerId, Currency currency) {
         Long sequenceNumber = accountRepository.getNextAccountNumberSequence();
         String formattedSequence = String.format("%016d", sequenceNumber);
@@ -34,6 +35,7 @@ public class AccountApplicationService {
         return newAccount;
     }
 
+    @Transactional
     public void reserveFunds(String accountId, BigDecimal amount) {
         UUID parseId = UUID.fromString(accountId);
 
