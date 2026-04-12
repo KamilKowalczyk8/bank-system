@@ -19,7 +19,7 @@ System przeszedł transformację z pojedynczego serwisu w pełni funkcjonalną a
 
 ## 🛠 Technologie
 
-- **Java 21** & **Spring Boot 3**
+- **Java 21** & **Spring Boot 4**
 - **Spring Cloud Gateway MVC** (Centralny Routing)
 - **Spring Cloud OpenFeign** (Komunikacja między serwisami)
 - **Spring Security** (Argon2, JWT)

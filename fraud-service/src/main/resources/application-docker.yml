@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://fraud-postgres:5432/fraudb
+    username: frauduser
+    password: fraudpassword
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

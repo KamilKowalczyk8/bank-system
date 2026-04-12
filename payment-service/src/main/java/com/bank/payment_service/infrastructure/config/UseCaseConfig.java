@@ -1,6 +1,7 @@
 package com.bank.payment_service.infrastructure.config;
 
 import com.bank.payment_service.application.port.out.AccountOperationPort;
+import com.bank.payment_service.application.port.out.FraudCheckPort;
 import com.bank.payment_service.application.port.out.PaymentEventPublisher;
 import com.bank.payment_service.application.port.out.PaymentRepository;
 import com.bank.payment_service.application.port.service.CreatePaymentUseCase;
@@ -20,8 +21,9 @@ public class UseCaseConfig {
     public ProcessPaymentUseCase processPaymentUseCase(
         PaymentRepository paymentRepository,
         PaymentEventPublisher paymentEventPublisher,
+        FraudCheckPort fraudCheckPort,
         AccountOperationPort accountOperationPort) {
-       return new ProcessPaymentUseCase(paymentRepository, paymentEventPublisher, accountOperationPort);
+       return new ProcessPaymentUseCase(paymentRepository, paymentEventPublisher, accountOperationPort, fraudCheckPort);
     }
 
 }

@@ -13,3 +13,9 @@ services:
     url: http://localhost:8083
   card:
     url: http://localhost:8087
+  account:
+    url: http://localhost:8084
+  payment:
+    url: http://localhost:8088
+  fraud:
+    url: http://localhost:8089

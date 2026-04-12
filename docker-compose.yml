@@ -84,6 +84,23 @@ services:
             timeout: 5s
             retries: 5
 
+    fraud-postgres:
+        image: postgres:16
+        container_name: fraud-postgres
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_USER: frauduser
+            POSTGRES_PASSWORD: fraudpassword
+            POSTGRES_DB: fraudb
+        volumes:
+            - fraud-postgres-data:/var/lib/postgresql/data
+        healthcheck:
+            test: [ "CMD-SHELL", "pg_isready -U frauduser -d fraudb" ]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+
     api-redis:
         image: redis:7-alpine
         container_name: api-redis
@@ -228,9 +245,23 @@ services:
             kafka:
                 condition: service_started
 
+    fraud-service:
+        build: ./fraud-service
+        container_name: fraud-service
+        ports:
+            - "8089:8089"
+        environment:
+            - SPRING_PROFILES_ACTIVE=docker
+        depends_on:
+            fraud-postgres:
+                condition: service_healthy
+            kafka:
+                condition: service_started
+
 volumes:
     auth-postgres-data:
     customer-postgres-data:
     account-postgres-data:
     card-postgres-data:
     payment-postgres-data:
+    fraud-postgres-data:

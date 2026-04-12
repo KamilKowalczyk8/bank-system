@@ -29,13 +29,11 @@ public record PaymentRequestDto(
         BigDecimal amount,
 
         @Schema(description = "Waluta (np. PLN, EUR, USD)", example = "PLN")
-        @NotBlank(message = "Waluta jest wymagana.")
-        @Pattern(regexp = "^(PLN|EUR|USD)$", message = "Obsługiwane waluty to wyłącznie PLN, EUR lub USD.")
+        @NotNull(message = "Waluta jest wymagana.")
         Currency currency,
 
         @Schema(description = "Typ płatności: TRANSFER lub CARD_PAYMENT", example = "TRANSFER")
-        @NotBlank(message = "Typ płatności jest wymagany.")
-        @Pattern(regexp = "^(TRANSFER|CARD_PAYMENT)$", message = "Niedozwolony typ płatności. Wybierz TRANSFER lub CARD_PAYMENT.")
+        @NotNull(message = "Typ płatności jest wymagany.")
         PaymentType type
 ) {
     public CreatePaymentCommand toCommand() {

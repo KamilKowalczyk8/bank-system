@@ -29,6 +29,15 @@ public class GatewayRoutingConfig {
     @Value("${services.card.url}")
     private String cardServiceUrl;
 
+    @Value("${services.account.url}")
+    private String accountServiceUrl;
+
+    @Value("${services.payment.url}")
+    private String paymentServiceUrl;
+
+    @Value("${services.fraud.url}")
+    private String fraudServiceUrl;
+
     @Bean
     public RouterFunction<ServerResponse> gatewayRoutes(
             JwtAuthenticationFilter jwtAuthenticationFilter,
@@ -53,6 +62,21 @@ public class GatewayRoutingConfig {
                         .POST("/api/cards/**", http())
                         .before(uri(cardServiceUrl))
                         .filter(jwtAuthenticationFilter)
+                        .build())
+                .and(route("account-service-route")
+                        .POST("/api/accounts/**", http())
+                        .before(uri(accountServiceUrl))
+                        .filter(jwtAuthenticationFilter)
+                        .build())
+                .and(route("fraud-service-route")
+                        .POST("/api/fraud/**", http())
+                        .before(uri(fraudServiceUrl))
+                        .filter(jwtAuthenticationFilter)
+                        .build())
+                .and(route("payment-service-route")
+                        .POST("/api/payments/**", http())
+                        .before(uri(paymentServiceUrl))
+                        .filter(jwtAuthenticationFilter)
                         .build());
 
         return routes
@@ -61,12 +85,11 @@ public class GatewayRoutingConfig {
     }
 }
 
-/* * TODO: [DŁUG TECHNOLOGICZNY - SERVICE DISCOVERY]
- * 1. Obecnie adresy mikroserwisów (np. http://localhost:8081) są "zahardkodowane" na sztywno.
- * W środowisku produkcyjnym adresy IP i porty zmieniają się dynamicznie (np. w Dockerze/Kubernetesie).
- * 2. DOCELOWE ROZWIĄZANIE: Wdrożyć wzorzec Service Discovery (np. Netflix Eureka Server).
- * Gdy Eureka będzie gotowa, zamienimy sztywne adresy na nazwy serwisów, np.:
- * z: .before(uri("http://localhost:8081"))
- * na: .before(uri("lb://auth-service")) // lb = Load Balancer
- * 3. Do tego czasu pamiętać o ręcznej zmianie portów w razie przenosin na inny serwer.
+/* * TODO: [SERVICE DISCOVERY - DOCKER / KUBERNETES]
+ * 1. Obecnie środowisko deweloperskie opiera się na Docker Compose.
+ * Service Discovery jest realizowane natywnie przez Docker DNS (np. http://account-service:8084).
+ * 2. DOCELOWE ROZWIĄZANIE PROD: Kubernetes (K8s).
+ * Po migracji na K8s, adresy zostaną uproszczone do natywnych serwisów k8s (np. http://account-service),
+ * a Load Balancing przejmie Ingress/Service z Kubernetesa.
+ * 3. Zrezygnowano ze Spring Cloud Netflix (Eureka) jako rozwiązania legacy na rzecz natywnych mechanizmów chmurowych.
  */

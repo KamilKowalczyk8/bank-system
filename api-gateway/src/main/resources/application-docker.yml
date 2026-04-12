@@ -13,3 +13,9 @@ services:
     url: http://onboarding-service:8083
   card:
     url: http://card-service:8087
+  account:
+    url: http://account-service:8084
+  payment:
+    url: http://payment-service:8088
+  fraud:
+    url: http://fraud-service:8089
