@@ -1,0 +1,48 @@
+# -----------------------------------------------------
+# DEPLOYMENT: jak uruchomić aplikację
+# -----------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service-deployment
+spec:
+  replicas: 1 # Jedna kopia
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service # etykieta do oznaczania poda
+    spec:
+      containers:
+        - name: auth-service
+          image: bank-system-auth-service:latest
+          imagePullPolicy: Never #Mówi K8s, żeby nie szukał w internecie, tylko użył lokalnego obrazu
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://auth-db:5432/authdb"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "authuser"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "authpass"
+
+---
+# -----------------------------------------------------
+# SERVICE: Udostępnia nasz Pod innym serwisom w klastrze
+# -----------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service # Dzięki temu inne serwisy wywołają http://auth-service:8081
+spec:
+  selector:
+    app: auth-service # Service szuka Podów z tą etykietą
+  ports:
+    - protocol: TCP
+      port: 8081      # Port, na którym Service nasłuchuje
+      targetPort: 8081 # Port, na który Service przekazuje ruch do Poda

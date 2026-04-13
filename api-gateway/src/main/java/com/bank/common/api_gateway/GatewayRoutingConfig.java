@@ -13,6 +13,7 @@ import static org.springframework.cloud.gateway.server.mvc.handler.GatewayRouter
 import static org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions.http;
 import static org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions.uri;
 import static org.springframework.cloud.gateway.server.mvc.filter.CircuitBreakerFilterFunctions.circuitBreaker;
+import static org.springframework.web.servlet.function.RequestPredicates.path;
 
 @Configuration
 public class GatewayRoutingConfig {
@@ -45,36 +46,36 @@ public class GatewayRoutingConfig {
             RateLimitingFilter rateLimitingFilter
     ) {
         RouterFunction<ServerResponse> routes = route("auth-service-route")
-                .POST("/auth/**", http())
+                .route(path("/auth/**"), http())
                 .before(uri(authServiceUrl))
                 .build()
                 .and(route("customer-service-route")
-                        .GET("/api/customers/**", http())
+                        .route(path("/api/customers/**"), http())
                         .before(uri(customerServiceUrl))
                         .filter(jwtAuthenticationFilter)
                         .filter(circuitBreaker("customerServiceCB", java.net.URI.create("forward:/fallback/customer")))
                         .build())
                 .and(route("onboarding-service-route")
-                        .POST("/api/onboarding/**", http())
+                        .route(path("/api/onboarding/**"), http())
                         .before(uri(onboardingServiceUrl))
                         .build())
                 .and(route("card-service-route")
-                        .POST("/api/cards/**", http())
+                        .route(path("/api/cards/**"), http())
                         .before(uri(cardServiceUrl))
                         .filter(jwtAuthenticationFilter)
                         .build())
                 .and(route("account-service-route")
-                        .POST("/api/accounts/**", http())
+                        .route(path("/api/accounts/**"), http())
                         .before(uri(accountServiceUrl))
                         .filter(jwtAuthenticationFilter)
                         .build())
                 .and(route("fraud-service-route")
-                        .POST("/api/fraud/**", http())
+                        .route(path("/api/fraud/**"), http())
                         .before(uri(fraudServiceUrl))
                         .filter(jwtAuthenticationFilter)
                         .build())
                 .and(route("payment-service-route")
-                        .POST("/api/payments/**", http())
+                        .route(path("/api/payments/**"), http())
                         .before(uri(paymentServiceUrl))
                         .filter(jwtAuthenticationFilter)
                         .build());
@@ -91,5 +92,4 @@ public class GatewayRoutingConfig {
  * 2. DOCELOWE ROZWIĄZANIE PROD: Kubernetes (K8s).
  * Po migracji na K8s, adresy zostaną uproszczone do natywnych serwisów k8s (np. http://account-service),
  * a Load Balancing przejmie Ingress/Service z Kubernetesa.
- * 3. Zrezygnowano ze Spring Cloud Netflix (Eureka) jako rozwiązania legacy na rzecz natywnych mechanizmów chmurowych.
  */

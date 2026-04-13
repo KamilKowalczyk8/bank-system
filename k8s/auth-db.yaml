@@ -1,0 +1,45 @@
+# -----------------------------------------------------
+# DEPLOYMENT: Baza danych PostgreSQL dla Auth Service
+# -----------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-db-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-db
+  template:
+    metadata:
+      labels:
+        app: auth-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "authdb"
+            - name: POSTGRES_USER
+              value: "authuser"
+            - name: POSTGRES_PASSWORD
+              value: "authpass"
+
+---
+# -----------------------------------------------------
+# SERVICE: Udostępnia bazę wewnątrz klastra
+# -----------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-db
+spec:
+  selector:
+    app: auth-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
