@@ -2,9 +2,7 @@ package com.bank.common.account_service.infrastructure.entity;
 
 import com.bank.common.account_service.domain.AccountStatus;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -18,6 +16,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @SequenceGenerator(name = "account_number_seq_gen", sequenceName = "account_number_sequence", allocationSize = 1)
 public class AccountEntity {
 
@@ -49,17 +49,5 @@ public class AccountEntity {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
-
-    protected AccountEntity() {}
-
-    public AccountEntity(UUID accountId, String customerId, String accountNumber, BigDecimal balance, Currency currency, AccountStatus status, Instant createdAt) {
-        this.accountId = accountId;
-        this.customerId = customerId;
-        this.accountNumber = accountNumber;
-        this.balance = balance;
-        this.currency = currency;
-        this.status = status;
-        this.createdAt = createdAt;
-    }
 
 }
