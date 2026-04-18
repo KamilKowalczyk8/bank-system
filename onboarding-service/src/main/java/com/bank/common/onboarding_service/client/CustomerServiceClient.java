@@ -1,18 +1,18 @@
 package com.bank.common.onboarding_service.client;
 
 import com.bank.common.onboarding_service.dto.CustomerProfileRequest;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.service.annotation.DeleteExchange;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.annotation.PostExchange;
 
-@FeignClient(name = "customer-service", url = "${services.customer.url}")
+@HttpExchange("/api/customers")
 public interface CustomerServiceClient {
 
-    @PostMapping("/api/customers/profile")
+    @PostExchange("/profile")
     void createCustomerProfile(@RequestBody CustomerProfileRequest request);
 
-    @DeleteMapping("/api/customers/{customerId}")
+    @DeleteExchange("/{customerId}")
     void deleteCustomerProfile(@PathVariable("customerId") String customerId);
 }

@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: fraud-db-deployment }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: fraud-db } }
+  template:
+    metadata: { labels: { app: fraud-db } }
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          ports: [ { containerPort: 5432 } ]
+          env:
+            - { name: POSTGRES_DB, value: "fraudb" }
+            - { name: POSTGRES_USER, value: "frauduser" }
+            - { name: POSTGRES_PASSWORD, value: "fraudpassword" }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: fraud-db }
+spec:
+  selector: { app: fraud-db }
+  ports: [ { protocol: TCP, port: 5432, targetPort: 5432 } ]

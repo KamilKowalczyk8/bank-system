@@ -2,18 +2,18 @@ package com.bank.common.onboarding_service.client;
 
 import com.bank.common.onboarding_service.dto.AuthRegistrationRequest;
 import com.bank.common.onboarding_service.dto.AuthResponse;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.service.annotation.DeleteExchange;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.annotation.PostExchange;
 
-@FeignClient(name = "auth-service", url = "${services.auth.url}")
+@HttpExchange("/api/auth")
 public interface AuthServiceClient {
 
-    @PostMapping("/auth/register")
+    @PostExchange("/register")
     AuthResponse registerAccount(@RequestBody AuthRegistrationRequest request);
 
-    @DeleteMapping("/auth/{authId}")
+    @DeleteExchange("/{authId}")
     void deleteAccount(@PathVariable("authId") String authId);
 }

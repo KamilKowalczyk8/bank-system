@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: card-service-deployment }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: card-service } }
+  template:
+    metadata: { labels: { app: card-service } }
+    spec:
+      containers:
+        - name: card-service
+          image: bank-system-card-service:v2
+          imagePullPolicy: Never
+          ports: [ { containerPort: 8087 } ]
+          env:
+            - { name: SPRING_PROFILES_ACTIVE, value: "docker" }
+            - { name: SPRING_DATASOURCE_URL, value: "jdbc:postgresql://card-db:5432/carddb" }
+            - { name: SPRING_DATASOURCE_USERNAME, value: "carduser" }
+            - { name: SPRING_DATASOURCE_PASSWORD, value: "cardpass" }
+            - { name: SPRING_KAFKA_BOOTSTRAP_SERVERS, value: "kafka:29092" }
+            - { name: SPRINGDOC_SWAGGER_UI_ENABLED, value: "false" }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: card-service }
+spec:
+  selector: { app: card-service }
+  ports: [ { protocol: TCP, port: 8087, targetPort: 8087 } ]

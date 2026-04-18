@@ -2,9 +2,9 @@ package com.bank.payment_service.infrastructure.out.external.account;
 
 import com.bank.payment_service.application.port.out.AccountOperationPort;
 import com.bank.payment_service.domain.Money;
-import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientResponseException;
 
 import java.util.UUID;
 
@@ -28,8 +28,11 @@ public class AccountOperationAdapter implements AccountOperationPort {
 
             accountClient.reserveFunds(sourceAccountId, request);
             return true;
-        } catch (FeignException e) {
-            log.error("[FEIGN] Odrzucenie transakcji w account-service:{}", e.status(), e);
+        } catch (RestClientResponseException e) {
+            log.error("[REST_CLIENT] Odrzucenie transakcji w account-service. Status HTTP: {}", e.getStatusCode(), e);
+            return false;
+        } catch (Exception e) {
+            log.error("[REST_CLIENT] Krytyczny błąd połączenia z account-service", e);
             return false;
         }
 
@@ -37,3 +40,4 @@ public class AccountOperationAdapter implements AccountOperationPort {
     }
 
 }
+

@@ -2,14 +2,14 @@ package com.bank.common.onboarding_service.client;
 
 import com.bank.common.onboarding_service.dto.AccountCreateRequest;
 import com.bank.common.onboarding_service.dto.AccountResponse;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.annotation.PostExchange;
 
-@FeignClient(name = "account-service", url = "${services.account.url}")
+@HttpExchange("/api/accounts")
 public interface AccountServiceClient {
 
-    @PostMapping("/api/accounts")
+    @PostExchange("")
     AccountResponse createAccount(@RequestBody AccountCreateRequest request);
 
 }

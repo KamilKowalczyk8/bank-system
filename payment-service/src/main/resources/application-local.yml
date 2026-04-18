@@ -17,3 +17,9 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+services:
+  account:
+    url: http://localhost:8084
+  fraud:
+    url: http://localhost:8089

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: ai-analyzer-service-deployment }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: ai-analyzer-service } }
+  template:
+    metadata: { labels: { app: ai-analyzer-service } }
+    spec:
+      containers:
+        - name: ai-analyzer-service
+          image: bank-system-ai-analyzer-service:latest
+          imagePullPolicy: Never
+          ports: [ { containerPort: 8086 } ]
+          env:
+            - { name: SPRING_PROFILES_ACTIVE, value: "docker" }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: ai-analyzer-service }
+spec:
+  selector: { app: ai-analyzer-service }
+  ports: [ { protocol: TCP, port: 8086, targetPort: 8086 } ]

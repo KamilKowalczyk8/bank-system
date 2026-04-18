@@ -8,16 +8,16 @@ import java.util.UUID;
 @Component
 public class CustomerProviderAdapter implements CustomerProvider {
 
-    private final CustomerFeignClient customerFeignClient;
+    private final CustomerClient customerClient;
 
-    public CustomerProviderAdapter(CustomerFeignClient customerFeignClient) {
-        this.customerFeignClient = customerFeignClient;
+    public CustomerProviderAdapter(CustomerClient customerClient) {
+        this.customerClient = customerClient;
     }
 
     @Override
     public String getCustomerEmail(UUID accountId) {
         try {
-            return customerFeignClient.getCustomerProfile(accountId).email();
+            return customerClient.getCustomerProfile(accountId).email();
         } catch (Exception e) {
             return "nieznany@klient.pl";
         }

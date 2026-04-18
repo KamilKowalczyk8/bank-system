@@ -2,10 +2,8 @@ package com.bank.card_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-@EnableFeignClients
 public class CardServiceApplication {
 
 	public static void main(String[] args) {
@@ -36,7 +34,7 @@ BLOCKED -> (nic)
     - Zwracać 400 przy nieprawidłowej zmianie statusu
 
 [ ] 3. Odporność na awarie — CustomerProviderAdapter
-    - Owinąć wywołanie FeignClienta w try/catch
+    - Owinąć wywołanie w try/catch
 		- W przypadku błędu:
 		- zapisać tymczasowy email: "brak@danych.pl"
 		- wysłać event na Kafkę: "customer-data-missing"
