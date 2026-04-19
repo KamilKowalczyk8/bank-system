@@ -24,7 +24,7 @@ public class ErrorEventPublisher implements ErrorReporter {
     }
 
     @Override
-    public void report(Exception ex) {
+    public void report(Throwable ex) {
         String stackTrace = extractStackTrace(ex);
 
         ErrorLogEvent event = new ErrorLogEvent(
@@ -39,7 +39,7 @@ public class ErrorEventPublisher implements ErrorReporter {
         kafkaTemplate.send(TOPIC, event);
     }
 
-    private String extractStackTrace(Exception ex) {
+    private String extractStackTrace(Throwable ex) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         ex.printStackTrace(pw);

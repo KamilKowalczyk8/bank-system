@@ -8,5 +8,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:4.0.3" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.kafka:spring-kafka:4.0.4" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:2.0.17" level="project" />
   </component>
 </module>
