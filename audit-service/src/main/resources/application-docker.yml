@@ -1,0 +1,6 @@
+spring:
+  kafka:
+    bootstrap-servers: bank-kafka:29092
+  data:
+    mongodb:
+      uri: mongodb://bank-mongodb:27017/bank_audit_db

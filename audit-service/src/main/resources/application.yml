@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: audit-service
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: audit-group
+      auto-offset-reset: earliest
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.bank.common.dto"
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/bank_audit_db

@@ -112,6 +112,14 @@ services:
             timeout: 5s
             retries: 5
 
+    bank-mongodb:
+        image: mongo:7.0
+        container_name: bank-mongodb
+        ports:
+            - "27017:27017"
+        volumes:
+            - audit-mongodb-data:/data/db
+
     kafka:
         image: confluentinc/confluent-local:7.5.0
         container_name: bank-kafka
@@ -258,6 +266,15 @@ services:
             kafka:
                 condition: service_started
 
+    audit-service:
+        build: ./audit-service
+        container_name: audit-service
+        environment:
+            - SPRING_PROFILES_ACTIVE=docker
+        depends_on:
+            - kafka
+            - bank-mongodb
+
 volumes:
     auth-postgres-data:
     customer-postgres-data:
@@ -265,3 +282,4 @@ volumes:
     card-postgres-data:
     payment-postgres-data:
     fraud-postgres-data:
+    audit-mongodb-data:
