@@ -1,7 +1,7 @@
 package com.bank.common.auth_service.service;
 
-import com.bank.auth_service.dto.*;
-import com.bank.auth_service.entity.*;
+import com.bank.common.auth_service.dto.*;
+import com.bank.common.auth_service.entity.*;
 import com.bank.common.auth_service.dto.*;
 import com.bank.common.auth_service.entity.*;
 import com.bank.common.auth_service.exception.AccountBlockedException;
@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.bank.common.api.ErrorReporter;
 import java.security.SecureRandom;
 
 import java.time.Instant;
@@ -32,7 +32,7 @@ public class AuthService {
     private final LoginAttemptRepository loginAttemptRepository;
     private final LoginSessionRepository loginSessionRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-
+    private final ErrorReporter errorReporter;
     private final String dummyHash;
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
@@ -42,7 +42,7 @@ public class AuthService {
     @Value("${jwt.refresh-expiration}")
     private long refreshExpiration;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, LoginAttemptRepository loginAttemptRepository, LoginSessionRepository loginSessionRepository, RefreshTokenRepository refreshTokenRepository,JwtService jwtService) {
+    public AuthService(UserRepository userRepository, ErrorReporter errorReporter, PasswordEncoder passwordEncoder, LoginAttemptRepository loginAttemptRepository, LoginSessionRepository loginSessionRepository, RefreshTokenRepository refreshTokenRepository,JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.loginAttemptRepository = loginAttemptRepository;
@@ -50,6 +50,7 @@ public class AuthService {
         this.refreshTokenRepository = refreshTokenRepository;
         this.dummyHash = passwordEncoder.encode("dummy-password-for-timing-attack");
         this.jwtService = jwtService;
+        this.errorReporter = errorReporter;
     }
 
 
@@ -133,6 +134,10 @@ public class AuthService {
             if (user != null) {
                 handleFailedLoginAttempt(user);
             }
+
+            String errorMsg = "Nieudana próba logowania: " + request.login();
+            log.warn(errorMsg);
+            errorReporter.report(new InvalidCredentialsException(errorMsg));
 
             throw new InvalidCredentialsException(
                     "Nieprawidłowy login lub hasło"
@@ -243,7 +248,11 @@ public class AuthService {
         User user = storedToken.getUser();
 
         if (storedToken.isRevoked()) {
-            log.warn("WYKRYTO POTENCJALNY ATAK! Próba użycia unieważnionego tokena dla usera: {}", user.getLogin());
+            String errorMsg = "WYKRYTO POTENCJALNY ATAK! Próba użycia unieważnionego tokena dla usera: " + user.getLogin();
+            log.warn(errorMsg);
+
+            errorReporter.report(new SecurityException(errorMsg));
+
             refreshTokenRepository.revokeAllUserTokens(user);
             throw new InvalidCredentialsException("Wykryto nieautoryzowane użycie tokena. Zaloguj się ponownie ze względów bezpieczeństwa.");
         }
@@ -336,10 +345,14 @@ public class AuthService {
 
         if (attempts >= 6) {
             user.setLockedUntil(Instant.now().plus(24, ChronoUnit.HOURS));
-            log.warn("Konto {} zostało zablokowane na 24h ({} błędów).", user.getLogin(), attempts);
+            String msg = "Konto " + user.getLogin() + " zostało zablokowane na 24h (" + attempts + " błędów).";
+            log.warn(msg);
+            errorReporter.report(new AccountBlockedException(msg));
         } else if (attempts >= 3) {
             user.setLockedUntil(Instant.now().plus(15, ChronoUnit.MINUTES));
-            log.warn("Konto {} zostało zablokowane na 15 min ({} błędów).", user.getLogin(), attempts);
+            String msg = "Konto " + user.getLogin() + " zostało zablokowane na 15 min (" + attempts + " błędów).";
+            log.warn(msg);
+            errorReporter.report(new AccountBlockedException(msg));
         } else {
             log.warn("Błędne hasło dla konta {}. Próba {}/3 do pierwszej blokady.", user.getLogin(), attempts);
         }
@@ -365,8 +378,3 @@ public class AuthService {
 // 4. [Security] Login Throttling - mechanizm celowego opóźniania odpowiedzi (np. za pomocą algorytmu Token Bucket) przy kolejnych błędnych próbach logowania, aby spowolnić ataki słownikowe.
 // 5. [Security] Risk-Based Authentication - analiza kontekstu logowania (nowy adres IP, inne urządzenie, dziwne godziny) w celu podniesienia poziomu weryfikacji przed wysłaniem SMS.
 
-// UWAGA ARCHITEKTONICZNA:
-// Zabezpieczenia sieciowe (Rate Limiting, ochrona przed atakami DDoS, blokowanie po IP)
-// są celowo pominięte w tym kodzie. Zgodnie z architekturą mikroserwisów, za odrzucanie
-// spamu przed dotarciem do AuthService odpowiada API Gateway.
-// ===================================================================================
