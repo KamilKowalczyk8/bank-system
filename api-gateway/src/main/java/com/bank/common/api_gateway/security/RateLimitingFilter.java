@@ -1,6 +1,9 @@
 package com.bank.common.api_gateway.security;
 
+import com.bank.common.api.ErrorReporter;
 import com.bank.common.api_gateway.dto.GatewayErrorResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -12,14 +15,17 @@ import org.springframework.web.servlet.function.ServerResponse;
 import java.time.Duration;
 
 @Component
+@Slf4j
 public class RateLimitingFilter implements HandlerFilterFunction<ServerResponse, ServerResponse> {
 
     private final StringRedisTemplate redisTemplate;
+    private final ErrorReporter errorReporter;
 
     private static final int MAX_REQUESTS_PER_MINUTE = 10;
 
-    public RateLimitingFilter(StringRedisTemplate redisTemplate) {
+    public RateLimitingFilter(StringRedisTemplate redisTemplate, ErrorReporter errorReporter) {
         this.redisTemplate = redisTemplate;
+        this.errorReporter = errorReporter;
     }
 
     @Override
@@ -27,7 +33,7 @@ public class RateLimitingFilter implements HandlerFilterFunction<ServerResponse,
 
         String clientIp = request.remoteAddress()
                 .map(address -> address.getAddress().getHostAddress())
-                .orElse("unkown-ip");
+                .orElse("unknown-ip");
 
         String redisKey = "rate_limit:" + clientIp;
 
@@ -35,7 +41,10 @@ public class RateLimitingFilter implements HandlerFilterFunction<ServerResponse,
         int currentRequest = currentRequestsStr != null ? Integer.parseInt(currentRequestsStr) : 0;
 
         if (currentRequest >= MAX_REQUESTS_PER_MINUTE) {
-            System.out.println("Zablokowano ruch z IP: " + clientIp + ". Przekroczono limit!");
+            String msg = "ALARM SECURITY: Wykryto atak DDoS lub nadmierny ruch z adresu IP: " + clientIp;
+            log.warn(msg);
+
+            errorReporter.report(new SecurityException(msg));
 
             GatewayErrorResponse errorResponse = GatewayErrorResponse.of(
                     HttpStatus.TOO_MANY_REQUESTS.value(),

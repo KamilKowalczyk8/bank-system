@@ -9,6 +9,7 @@ spring:
     active: local
 
   kafka:
+    bootstrap-servers: ${KAFKA_URL:localhost:9092}
     consumer:
       group-id: notification-group
       auto-offset-reset: earliest

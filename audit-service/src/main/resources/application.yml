@@ -3,7 +3,7 @@ spring:
     name: audit-service
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_URL:localhost:9092}
     consumer:
       group-id: audit-group
       auto-offset-reset: earliest
@@ -11,6 +11,5 @@ spring:
       properties:
         spring.json.trusted.packages: "com.bank.common.dto"
 
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/bank_audit_db
+
+

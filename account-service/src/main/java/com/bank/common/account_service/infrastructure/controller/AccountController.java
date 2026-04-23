@@ -1,9 +1,9 @@
-package com.bank.common.account_service.presentation;
+package com.bank.common.account_service.infrastructure.controller;
 
 import com.bank.common.account_service.application.AccountApplicationService;
 import com.bank.common.account_service.domain.Account;
-import com.bank.common.account_service.presentation.dto.AccountResponse;
-import com.bank.common.account_service.presentation.dto.CreateAccountRequest;
+import com.bank.common.account_service.infrastructure.dto.AccountResponse;
+import com.bank.common.account_service.infrastructure.dto.CreateAccountRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

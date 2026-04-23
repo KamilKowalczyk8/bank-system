@@ -5,6 +5,8 @@ import com.bank.card_service.application.service.ActivateCardUseCase;
 import com.bank.card_service.application.service.CreateCardUseCase;
 import com.bank.card_service.domain.CardFactory;
 import com.bank.card_service.domain.CardRepository;
+import com.bank.common.api.ErrorReporter;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,7 +21,8 @@ public class UseCaseConfig {
             CardFactory cardFactory,
             CvvGenerator cvvGenerator,
             CardEventPublisher cardEventPublisher,
-            CustomerProvider customerProvider
+            CustomerProvider customerProvider,
+            ErrorReporter errorReporter
     ) {
         return new CreateCardUseCase(
                 cardRepository,
@@ -28,14 +31,16 @@ public class UseCaseConfig {
                 cardFactory,
                 cvvGenerator,
                 cardEventPublisher,
-                customerProvider
+                customerProvider,
+                errorReporter
         );
     }
 
     @Bean
-    public ActivateCardUseCase activateCardUseCase(CardRepository cardRepository) {
+    public ActivateCardUseCase activateCardUseCase(CardRepository cardRepository, ErrorReporter errorReporter) {
         return new ActivateCardUseCase(
-                cardRepository
+                cardRepository,
+                errorReporter
         );
     }
 }

@@ -7,7 +7,7 @@ import com.bank.common.account_service.infrastructure.entity.AccountEntity;
 import com.bank.common.account_service.infrastructure.mapper.AccountMapper;
 import com.bank.common.account_service.infrastructure.repository.AccountRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.stereotype.Service;
+import com.bank.common.api.ErrorReporter;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -16,10 +16,12 @@ public class AccountApplicationService {
 
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
+    private final ErrorReporter errorReporter;
 
-    public AccountApplicationService(AccountMapper accountMapper, AccountRepository accountRepository) {
+    public AccountApplicationService(AccountMapper accountMapper, AccountRepository accountRepository, ErrorReporter errorReporter) {
         this.accountMapper = accountMapper;
         this.accountRepository = accountRepository;
+        this.errorReporter = errorReporter;
     }
 
     @Transactional
@@ -40,7 +42,11 @@ public class AccountApplicationService {
         UUID parseId = UUID.fromString(accountId);
 
         AccountEntity entity = accountRepository.findById(parseId)
-                .orElseThrow(() -> new IllegalArgumentException("Nie znaleziono konta o ID: " + accountId));
+                .orElseThrow(() -> {
+                    String msg = "OSTRZEŻENIE: Próba rezerwacji środków na nieistniejącym koncie ID: " + accountId;
+                    errorReporter.report(new IllegalArgumentException(msg));
+                    return new IllegalArgumentException("Nie znaleziono konta o ID: " + accountId);
+                });
 
         Account account = accountMapper.toDomain(entity);
 

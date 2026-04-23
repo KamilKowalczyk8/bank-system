@@ -1,4 +1,4 @@
-package com.bank.common.account_service.presentation.dto;
+package com.bank.common.account_service.infrastructure.dto;
 
 import com.bank.common.account_service.domain.Currency;
 import jakarta.validation.constraints.NotBlank;

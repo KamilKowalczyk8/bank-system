@@ -6,6 +6,7 @@ import com.bank.card_service.domain.CardFactory;
 import com.bank.card_service.domain.CardNumber;
 import com.bank.card_service.domain.CardRepository;
 import com.bank.card_service.infrastructure.dto.event.CardCreatedEvent;
+import com.bank.common.api.ErrorReporter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -19,6 +20,7 @@ public class CreateCardUseCase {
     private final CvvGenerator cvvGenerator;
     private final CardEventPublisher cardEventPublisher;
     private final CustomerProvider customerProvider;
+    private final ErrorReporter errorReporter;
 
     public CreateCardUseCase(
         CardRepository cardRepository,
@@ -27,7 +29,8 @@ public class CreateCardUseCase {
         CardFactory cardFactory,
         CvvGenerator cvvGenerator,
         CardEventPublisher cardEventPublisher,
-        CustomerProvider customerProvider
+        CustomerProvider customerProvider,
+        ErrorReporter errorReporter
     ) {
         this.cardRepository = cardRepository;
         this.cardNumberGenerator = cardNumberGenerator;
@@ -36,6 +39,7 @@ public class CreateCardUseCase {
         this.cvvGenerator = cvvGenerator;
         this.cardEventPublisher = cardEventPublisher;
         this.customerProvider = customerProvider;
+        this.errorReporter = errorReporter;
     }
 
     public CreateCardResult execute(UUID accountId, String rawPin) {
@@ -44,6 +48,8 @@ public class CreateCardUseCase {
         CardNumber safeCardNumber = new CardNumber(rawCardNumber);
 
         if (cardRepository.existsByCardNumber(safeCardNumber)) {
+            String msg = "Krytyczny błąd kolizji! Wygenerowano numer karty, który już istnieje w systemie: " + maskCardNumber(rawCardNumber);
+            errorReporter.report(new IllegalStateException(msg));
             throw new IllegalStateException("Krytyczny błąd: Wygenerowano numer karty, który już istnieje w systemie!");
         }
 
