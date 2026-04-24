@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
-@Order(Ordered.LOWEST_PRECEDENCE)
-public class GlobalExceptionHandler {
+@Order(Ordered.LOWEST_PRECEDENCE) // ustalenie priorytetu na najnizszy żeby uniknąc konfliktu z lokalnymi handlerami te uruchamiają się dopiero gdy w danym serwisie brakuje jakiejs obsługi błędu
+public class CommonFallbackExceptionHandler {
 
         private final ErrorReporter errorReporter;
 

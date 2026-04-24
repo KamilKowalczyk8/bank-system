@@ -1,5 +1,6 @@
 package com.bank.fraud_service.application.service;
 
+import com.bank.common.api.ErrorReporter;
 import com.bank.fraud_service.application.port.out.FraudAuditPort;
 import com.bank.fraud_service.domain.*;
 
@@ -9,10 +10,12 @@ public class EvaluateFraudUseCase {
 
     private final List<Rule> rules;
     private final FraudAuditPort fraudAuditPort;
+    private final ErrorReporter errorReporter;
 
-    public EvaluateFraudUseCase(List<Rule> rules, FraudAuditPort fraudAuditPort) {
+    public EvaluateFraudUseCase(List<Rule> rules, FraudAuditPort fraudAuditPort, ErrorReporter errorReporter) {
         this.rules = rules;
         this.fraudAuditPort = fraudAuditPort;
+        this.errorReporter = errorReporter;
     }
 
     public FraudResult evaluate(FraudContext context) {
@@ -44,6 +47,14 @@ public class EvaluateFraudUseCase {
 
         if (decision != FraudDecision.ACCEPT) {
             fraudAuditPort.save(context, finalResult);
+        }
+
+        if (decision == FraudDecision.REJECT) {
+            String alarmMessage = String.format(
+                    "KRYTYCZNY ALARM SECURITY: Zablokowano transakcję z powodu skrajnego ryzyka (Score: %d). Złamane reguły: %s.",
+                    totalScore, String.join(", ", reasons)
+            );
+            errorReporter.report(new SecurityException(alarmMessage));
         }
 
         return finalResult;

@@ -1,4 +1,4 @@
-package com.bank.ai_analyzer_service.dto;
+package com.bank.common.ai_analyzer_service.dto;
 
 import lombok.Builder;
 

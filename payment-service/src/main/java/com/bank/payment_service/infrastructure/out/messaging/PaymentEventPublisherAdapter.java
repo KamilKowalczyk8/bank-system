@@ -30,4 +30,21 @@ public class PaymentEventPublisherAdapter implements PaymentEventPublisher {
 
         log.info("[KAFKA] Wysłano zdarzenie: Przelew {} zakonczony sukcesem!", payment.getId());
     }
+
+    @Override
+    public void publishPaymentFailedEvent(Payment payment) {
+        PaymentFailedEvent paymentFailedEvent = new PaymentFailedEvent(
+                payment.getId(),
+                payment.getSourceAccountId(),
+                payment.getDestinationAccountId(),
+                payment.getMoney().amount(),
+                payment.getMoney().currency().name(),
+                payment.getStatus().name()
+        );
+
+        kafkaTemplate.send("payment.failed", paymentFailedEvent.sourceAccountId().toString(), paymentFailedEvent);
+        log.warn("[KAFKA] Wysłano zdarzenie: Przelew {} ODRZUCONY (Powód: {})",
+                payment.getId(), payment.getStatus().name());
+
+    }
 }

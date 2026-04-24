@@ -1,5 +1,6 @@
 package com.bank.common.onboarding_service.service;
 
+import com.bank.common.api.ErrorReporter;
 import com.bank.common.onboarding_service.client.AccountServiceClient;
 import com.bank.common.onboarding_service.client.AuthServiceClient;
 import com.bank.common.onboarding_service.client.CustomerServiceClient;
@@ -19,6 +20,7 @@ public class OnboardingService {
     private final CustomerServiceClient customerServiceClient;
     private final AccountServiceClient accountServiceClient;
     private final OnboardingEventProducer onboardingEventProducer;
+    private final ErrorReporter errorReporter;
 
     public void processOnboarding(OnboardingRequest request) {
         log.info("Rozpoczynamy proces onboardingu dla email: {}", request.email());
@@ -87,7 +89,10 @@ public class OnboardingService {
                     log.info("Cofanie profilu w customer-service...");
                     customerServiceClient.deleteCustomerProfile(generatedAuthId);
                 } catch (Exception ex) {
-                    log.error("CRITICAL: Nie udało się usunąć profilu klienta dla ID: {}", generatedAuthId, ex);
+                    String msg = "KATASTROFALNY BŁĄD (Inconsistent State): Nie udało się cofnąć profilu klienta dla ID " + generatedAuthId + ". " +
+                            "Profil został (lub próbowano go) utworzyć w customer-service, ale proces onboardingu upadł. Wymagane ręczne usunięcie z bazy!";
+                    log.error(msg, ex);
+                    errorReporter.report(new RuntimeException(msg, ex));
                 }
             }
 
@@ -95,7 +100,10 @@ public class OnboardingService {
                 log.info("Cofanie konta w auth-service...");
                 authServiceClient.deleteAccount(generatedAuthId);
             } catch (Exception rollbackException) {
-                log.error("CRITICAL: Nie udało się usunąć konta auth dla ID: {}", generatedAuthId, rollbackException);
+                String msg = "KATASTROFALNY BŁĄD (Inconsistent State): Nie udało się usunąć konta (AuthID: " + generatedAuthId + ") w auth-service podczas rollbacku! " +
+                        "Klient istnieje w Auth, ale nie ma profilu. Wymagane ręczne usunięcie z bazy auth!";
+                log.error(msg, rollbackException);
+                errorReporter.report(new RuntimeException(msg, rollbackException));
             }
 
             throw new IllegalStateException("Proces onboardingu przerwany i wycofany z powodu błędu w mikroserwisach: " + e.getMessage());

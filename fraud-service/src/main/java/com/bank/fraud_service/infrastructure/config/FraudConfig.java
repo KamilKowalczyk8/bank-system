@@ -1,5 +1,6 @@
 package com.bank.fraud_service.infrastructure.config;
 
+import com.bank.common.api.ErrorReporter;
 import com.bank.fraud_service.application.port.out.FraudAuditPort;
 import com.bank.fraud_service.application.service.EvaluateFraudUseCase;
 import com.bank.fraud_service.domain.Rule;
@@ -14,12 +15,16 @@ import java.util.List;
 public class FraudConfig {
 
     @Bean
-    public EvaluateFraudUseCase evaluateFraudUseCase(FraudAuditPort fraudAuditPort) {
+    public EvaluateFraudUseCase evaluateFraudUseCase(FraudAuditPort fraudAuditPort, ErrorReporter errorReporter) {
         List<Rule> ruleList = List.of(
                 new HighAmountRule(),
                 new BlacklistedAccountRule()
         );
 
-        return new EvaluateFraudUseCase(ruleList, fraudAuditPort);
+        return new EvaluateFraudUseCase(
+                ruleList,
+                fraudAuditPort,
+                errorReporter
+        );
     }
 }

@@ -1,6 +1,6 @@
-package com.bank.ai_analyzer_service.infrastructure;
+package com.bank.common.ai_analyzer_service.infrastructure;
 
-import com.bank.ai_analyzer_service.dto.ErrorLogEvent;
+import com.bank.common.ai_analyzer_service.dto.ErrorLogEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
