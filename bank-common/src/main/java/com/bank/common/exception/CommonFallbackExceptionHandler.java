@@ -37,7 +37,7 @@ public class CommonFallbackExceptionHandler {
         // łapie całą reszte błędów
         @ExceptionHandler(Exception.class)
         public ResponseEntity<String> handleAllUnhandledExceptions(Exception ex) {
-            log.error("KRYTYCZNY BŁĄD SYSTEMU: ", ex);
+            log.error("KRYTYCZNY błąd systemu: ", ex);
             errorReporter.report(ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Wystąpił wewnętrzny błąd serwera. Administratorzy zostali powiadomieni.");

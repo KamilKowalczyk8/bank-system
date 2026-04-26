@@ -52,17 +52,18 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/bank-auth-service:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/bank-auth-service:${{ github.sha }}
+     
 
       # krok 6 wdrożenie do kubernetesa
-      - name: Deploy to Kubernetes
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+      #- name: Deploy to Kubernetes
+        #run: |
+          #mkdir -p ~/.kube
+          #echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
           
-          kubectl apply -f k8s/auth/
+          #kubectl apply -f k8s/auth/
           
-          kubectl set image deployment/auth-service-deployment \
-            auth-service=${{ secrets.DOCKERHUB_USERNAME }}/bank-auth-service:${{ github.sha }}
+          #kubectl set image deployment/auth-service-deployment \
+            #auth-service=${{ secrets.DOCKERHUB_USERNAME }}/bank-auth-service:${{ github.sha }}
             
             
             
