@@ -6,6 +6,7 @@ on:
     paths:
       - 'auth-service/**'
       - 'bank-common/**'
+    workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -24,9 +25,15 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # Krok 3 budowanie jara (dockerfile)
-      - name: Build with Maven
-        run: mvn clean package -pl auth-service -am -DskipTests
+      # Krok 3a budowanie jara ale najpierw biblioteka bank-common(dockerfile)
+      - name: Build bank-common
+        working-directory: ./bank-common
+        run: mvn clean install -DskipTests
+
+      # Krok 3b Zbudowanie właściwego serwisu
+      - name: Build auth-service
+        working-directory: ./auth-service
+        run: mvn clean package -DskipTests
 
       # Krok 4 logowanie do dockera
       - name: Login to Docker
