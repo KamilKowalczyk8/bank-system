@@ -12,6 +12,8 @@ spec:
       labels:
         app: auth-service # etykieta do oznaczania poda
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
         - name: auth-service
           image: kamilkowalczyk8/bank-system-auth-service:latest
