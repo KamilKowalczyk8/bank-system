@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: bank-system-auth-service:latest
-          imagePullPolicy: Never #Mówi K8s, żeby nie szukał w internecie, tylko użył lokalnego obrazu
+          image: kamilkowalczyk8/bank-system-auth-service:latest
+          #imagePullPolicy: Never #Mówi K8s, żeby nie szukał w internecie, tylko użył lokalnego obrazu
           ports:
             - containerPort: 8081
           env:
