@@ -1,15 +1,15 @@
-name: Auth Service CI/CD
+name: Payment Service CI/CD
 
 on:
   push:
     branches: [ "main" ]
     paths:
-      - 'auth-service/**'
+      - 'payment-service/**'
       - 'bank-common/**'
 
 jobs:
   call-template:
     uses: ./.github/workflows/template-microservice-ci.yml
     with:
-      service_name: 'auth-service' #wstrzykiwana nazwa folderu
-    secrets: inherit # dostęp do sekretów
+      service_name: 'payment-service'
+    secrets: inherit
