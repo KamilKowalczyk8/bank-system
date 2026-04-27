@@ -16,7 +16,7 @@ spec:
         - name: regcred
       containers:
         - name: auth-service
-          image: kamilkowalczyk8/bank-system-auth-service:latest
+          image: kamilkowalczyk8/bank-auth-service:latest
           #imagePullPolicy: Never #Mówi K8s, żeby nie szukał w internecie, tylko użył lokalnego obrazu
           ports:
             - containerPort: 8081
