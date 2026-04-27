@@ -25,7 +25,7 @@ public class AccountController {
     }
 
     @PostMapping
-    @Operation(summary = "Utwórz nowe konto", description = "Tworzy nowe konto bankowe dla podanego klienta w określonej walucie.")
+    @Operation(summary = "Utwórz nowe konto ", description = "Tworzy nowe konto bankowe dla podanego klienta w określonej walucie.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Konto zostało pomyślnie utworzone"),
             @ApiResponse(responseCode = "400", description = "Błędne dane wejściowe")
