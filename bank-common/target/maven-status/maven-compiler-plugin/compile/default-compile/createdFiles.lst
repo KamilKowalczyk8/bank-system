@@ -1,3 +1,4 @@
 com\bank\common\messaging\ErrorEventPublisher.class
-com\bank\common\dto\ErrorLogEvent.class
+com\bank\common\exception\CommonFallbackExceptionHandler.class
 com\bank\common\api\ErrorReporter.class
+com\bank\common\dto\ErrorLogEvent.class
