@@ -3,3 +3,6 @@ spring:
     url: jdbc:postgresql://auth-postgres:5432/authdb
     username: authuser
     password: authpass
+
+  kafka:
+    bootstrap-servers: bank-kafka:29092

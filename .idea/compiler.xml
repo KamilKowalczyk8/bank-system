@@ -11,7 +11,7 @@
         <module name="ai-analyzer-service" />
         <module name="notification-service" />
       </profile>
-      <profile name="Annotation profile for account-service" enabled="true">
+      <profile name="Annotation profile for card-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -21,8 +21,8 @@
         <module name="fraud-service" />
         <module name="auth-service" />
         <module name="payment-service" />
-        <module name="customer-service" />
         <module name="audit-service" />
+        <module name="customer-service" />
         <module name="card-service" />
         <module name="account-service" />
         <module name="onboarding-service" />

@@ -4,3 +4,6 @@ spring:
     username: accountuser
     password: accountpass
     driver-class-name: org.postgresql.Driver
+
+  kafka:
+    bootstrap-servers: bank-kafka:29092

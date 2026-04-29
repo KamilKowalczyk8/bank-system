@@ -29,6 +29,8 @@ spec:
               value: "authuser"
             - name: SPRING_DATASOURCE_PASSWORD
               value: "authpass"
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: bank-kafka:29092
 
 ---
 
