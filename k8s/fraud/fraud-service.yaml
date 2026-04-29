@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: fraud-service
-          image: bank-system-fraud-service:latest
+          image: kamilkowalczyk8/bank-fraud-service:latest
           imagePullPolicy: Never
           ports: [ { containerPort: 8089 } ]
           env:

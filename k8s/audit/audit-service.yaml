@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: audit-service
-          image: twoj_nick/bank-audit-service:latest
+          image: kamilkowalczyk8/bank-audit-service:latest
           ports:
             - containerPort: 8080
           env:

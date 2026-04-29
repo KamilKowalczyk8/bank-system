@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: account-service
-          image: bank-system-account-service:latest
+          image: kamilkowalczyk8/bank-account-service:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 8084

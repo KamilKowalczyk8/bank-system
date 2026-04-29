@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: payment-service
-          image: bank-system-payment-service:latest
+          image: kamilkowalczyk8/bank-payment-service:latest
           imagePullPolicy: Never
           ports: [ { containerPort: 8088 } ]
           env:
