@@ -13,7 +13,7 @@ public class ErrorConfig {
     @Bean
     public ErrorReporter errorReporter(
             KafkaTemplate<String, ErrorLogEvent> kafkaTemplate,
-            @Value("${spring.application.name:auth-service}") String serviceName) {
+            @Value("${spring.application.name}") String serviceName) {
 
         return new ErrorEventPublisher(kafkaTemplate, serviceName);
     }

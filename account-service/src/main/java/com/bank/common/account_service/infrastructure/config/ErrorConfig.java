@@ -11,11 +11,11 @@ import org.springframework.kafka.core.KafkaTemplate;
 @Configuration
 public class ErrorConfig {
 
-    @Value("${spring.application.name:account-service}")
-    private String serviceName;
-
     @Bean
-    public ErrorReporter errorReporter(KafkaTemplate<String, ErrorLogEvent> kafkaTemplate) {
+    public ErrorReporter errorReporter(
+            KafkaTemplate<String, ErrorLogEvent> kafkaTemplate,
+            @Value("${spring.application.name:auth-service}") String serviceName) {
+
         return new ErrorEventPublisher(kafkaTemplate, serviceName);
     }
 
