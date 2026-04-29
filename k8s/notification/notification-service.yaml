@@ -10,7 +10,7 @@ spec:
       containers:
         - name: notification-service
           image: kamilkowalczyk8/bank-notification-service:latest
-          imagePullPolicy: Never
+          #imagePullPolicy: Never
           ports: [ { containerPort: 8085 } ]
           env:
             - { name: SPRING_PROFILES_ACTIVE, value: "docker" }

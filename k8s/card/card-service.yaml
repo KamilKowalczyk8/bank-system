@@ -10,7 +10,7 @@ spec:
       containers:
         - name: card-service
           image: kamilkowalczyk8/bank-card-service:v2
-          imagePullPolicy: Never
+          #imagePullPolicy: Never
           ports: [ { containerPort: 8087 } ]
           env:
             - { name: SPRING_PROFILES_ACTIVE, value: "docker" }

@@ -15,7 +15,7 @@ spec:
       containers:
         - name: customer-service
           image: kamilkowalczyk8/bank-customer-service:latest
-          imagePullPolicy: Never
+          #imagePullPolicy: Never
           ports:
             - containerPort: 8082
           env:

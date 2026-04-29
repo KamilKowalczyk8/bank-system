@@ -10,7 +10,7 @@ spec:
       containers:
         - name: onboarding-service
           image: kamilkowalczyk8/bank-onboarding-service:v3
-          imagePullPolicy: Never
+          #imagePullPolicy: Never
           ports: [ { containerPort: 8083 } ]
           env:
             - { name: SPRING_PROFILES_ACTIVE, value: "docker" }
