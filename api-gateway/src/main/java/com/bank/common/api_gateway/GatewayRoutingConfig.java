@@ -4,16 +4,11 @@ import com.bank.common.api_gateway.security.JwtAuthenticationFilter;
 import com.bank.common.api_gateway.security.RateLimitingFilter;
 import com.bank.common.api_gateway.security.SecurityHeadersFilter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.gateway.route.RouteLocator;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.function.RouterFunction;
-import org.springframework.web.servlet.function.ServerResponse;
 
-import static org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions.route;
-import static org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions.http;
-import static org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions.uri;
-import static org.springframework.cloud.gateway.server.mvc.filter.CircuitBreakerFilterFunctions.circuitBreaker;
-import static org.springframework.web.servlet.function.RequestPredicates.path;
 
 @Configuration
 public class GatewayRoutingConfig {
@@ -40,49 +35,80 @@ public class GatewayRoutingConfig {
     private String fraudServiceUrl;
 
     @Bean
-    public RouterFunction<ServerResponse> gatewayRoutes(
+    public RouteLocator gatewayRoutes(
+            RouteLocatorBuilder builder,
             JwtAuthenticationFilter jwtAuthenticationFilter,
             SecurityHeadersFilter securityHeadersFilter,
             RateLimitingFilter rateLimitingFilter
     ) {
-        RouterFunction<ServerResponse> routes = route("auth-service-route")
-                .route(path("/auth/**"), http())
-                .before(uri(authServiceUrl))
-                .build()
-                .and(route("customer-service-route")
-                        .route(path("/api/customers/**"), http())
-                        .before(uri(customerServiceUrl))
-                        .filter(jwtAuthenticationFilter)
-                        .filter(circuitBreaker("customerServiceCB", java.net.URI.create("forward:/fallback/customer")))
-                        .build())
-                .and(route("onboarding-service-route")
-                        .route(path("/api/onboarding/**"), http())
-                        .before(uri(onboardingServiceUrl))
-                        .build())
-                .and(route("card-service-route")
-                        .route(path("/api/cards/**"), http())
-                        .before(uri(cardServiceUrl))
-                        .filter(jwtAuthenticationFilter)
-                        .build())
-                .and(route("account-service-route")
-                        .route(path("/api/accounts/**"), http())
-                        .before(uri(accountServiceUrl))
-                        .filter(jwtAuthenticationFilter)
-                        .build())
-                .and(route("fraud-service-route")
-                        .route(path("/api/fraud/**"), http())
-                        .before(uri(fraudServiceUrl))
-                        .filter(jwtAuthenticationFilter)
-                        .build())
-                .and(route("payment-service-route")
-                        .route(path("/api/payments/**"), http())
-                        .before(uri(paymentServiceUrl))
-                        .filter(jwtAuthenticationFilter)
-                        .build());
+        return builder.routes()
 
-        return routes
-                .filter(rateLimitingFilter)
-                .filter(securityHeadersFilter);
+                .route("auth-service-route", r -> r
+                        .path("/auth/**")
+                        .filters(f -> f
+                                .filter(rateLimitingFilter)
+                        )
+                        .uri(authServiceUrl)
+                )
+
+                .route("customer-service-route", r -> r
+                        .path("/api/customers/**")
+                        .filters(f -> f
+                                .filter(jwtAuthenticationFilter)
+                                .circuitBreaker(config -> config
+                                        .setName("customerServiceCB")
+                                        .setFallbackUri("forward:/fallback/customer")
+                                )
+                        )
+                        .uri(customerServiceUrl)
+                )
+
+                .route("onboarding-service-route", r -> r
+                        .path("/api/onboarding/**")
+                        .filters(f -> f
+                                .filter(rateLimitingFilter)
+
+                        )
+                        .uri(onboardingServiceUrl)
+                )
+
+                .route("card-service-route", r -> r
+                        .path("/api/cards/**")
+                        .filters(f -> f
+                                .filter(rateLimitingFilter)
+                                .filter(jwtAuthenticationFilter)
+                        )
+                        .uri(cardServiceUrl)
+                )
+
+                .route("account-service-route", r -> r
+                        .path("/api/accounts/**")
+                        .filters(f -> f
+                                .filter(rateLimitingFilter)
+                                .filter(jwtAuthenticationFilter)
+                        )
+                        .uri(accountServiceUrl)
+                )
+
+                .route("fraud-service-route", r -> r
+                        .path("/api/fraud/**")
+                        .filters(f -> f
+                                .filter(rateLimitingFilter)
+                                .filter(jwtAuthenticationFilter)
+                        )
+                        .uri(fraudServiceUrl)
+                )
+
+                .route("payment-service-route", r -> r
+                        .path("/api/payments/**")
+                        .filters(f -> f
+                                .filter(rateLimitingFilter)
+                                .filter(jwtAuthenticationFilter)
+                        )
+                        .uri(paymentServiceUrl)
+                )
+
+                .build();
     }
 }
 
