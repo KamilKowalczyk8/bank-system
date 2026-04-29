@@ -3,12 +3,11 @@ spring:
     name: audit-service
 
   kafka:
-    bootstrap-servers: ${KAFKA_URL:localhost:9092}
+    bootstrap-servers: kafka:9092
     consumer:
       group-id: audit-group
       auto-offset-reset: earliest
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer      properties:
         spring.json.trusted.packages: "com.bank.common.dto"
 
 
