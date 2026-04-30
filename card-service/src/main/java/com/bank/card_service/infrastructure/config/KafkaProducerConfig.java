@@ -37,12 +37,12 @@ public class KafkaProducerConfig {
         return config;
     }
 
-    @Bean
+    @Bean("cardProducerFactory")
     public ProducerFactory<String, CardCreatedEvent> cardProducerFactory() {
         return new DefaultKafkaProducerFactory<>(commonConfig());
     }
 
-    @Bean
+    @Bean("cardKafkaTemplate")
     public KafkaTemplate<String, CardCreatedEvent> cardKafkaTemplate() {
         return new KafkaTemplate<>(cardProducerFactory());
     }

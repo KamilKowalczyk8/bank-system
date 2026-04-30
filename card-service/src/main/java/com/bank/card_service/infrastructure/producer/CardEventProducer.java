@@ -14,7 +14,8 @@ public class CardEventProducer implements CardEventPublisher {
 
     private final KafkaTemplate<String, CardCreatedEvent> kafkaTemplate;
 
-    public CardEventProducer(KafkaTemplate<String, CardCreatedEvent> kafkaTemplate) {
+    public CardEventProducer(@org.springframework.beans.factory.annotation.Qualifier("cardKafkaTemplate")
+                             KafkaTemplate<String, CardCreatedEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
