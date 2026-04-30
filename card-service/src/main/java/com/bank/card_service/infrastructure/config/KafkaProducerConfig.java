@@ -7,6 +7,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
@@ -25,9 +26,7 @@ public class KafkaProducerConfig {
         System.out.println("KAFKA CARD CONFIG LOADED");
     }
 
-
-    @Bean
-    public ProducerFactory<String, CardCreatedEvent> cardProducerFactory() {
+    private Map<String, Object> commonConfig() {
         Map<String, Object> config = new HashMap<>();
 
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
@@ -35,11 +34,22 @@ public class KafkaProducerConfig {
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                 org.springframework.kafka.support.serializer.JsonSerializer.class);
 
-        return new DefaultKafkaProducerFactory<>(config);
+        return config;
+    }
+
+    @Bean
+    public ProducerFactory<String, CardCreatedEvent> cardProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(commonConfig());
     }
 
     @Bean
     public KafkaTemplate<String, CardCreatedEvent> cardKafkaTemplate() {
         return new KafkaTemplate<>(cardProducerFactory());
+    }
+
+    @Bean
+    @Primary
+    public KafkaTemplate<String, Object> kafkaTemplateGeneric() {
+        return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(commonConfig()));
     }
 }
