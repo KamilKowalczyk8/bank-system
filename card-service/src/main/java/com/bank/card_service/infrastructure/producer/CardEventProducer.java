@@ -14,9 +14,9 @@ public class CardEventProducer implements CardEventPublisher {
 
     private static final String TOPIC = "card-created-events";
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, CardCreatedEvent> kafkaTemplate;
 
-    public CardEventProducer(KafkaTemplate<String, Object> kafkaTemplate) {
+    public CardEventProducer(KafkaTemplate<String, CardCreatedEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
