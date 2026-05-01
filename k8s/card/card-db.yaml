@@ -12,9 +12,18 @@ spec:
           image: postgres:16
           ports: [ { containerPort: 5432 } ]
           env:
-            - { name: POSTGRES_DB, value: "carddb" }
-            - { name: POSTGRES_USER, value: "carduser" }
-            - { name: POSTGRES_PASSWORD, value: "cardpass" }
+            - name: POSTGRES_DB
+              value: "carddb"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: card-db-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: card-db-secret
+                  key: password
 ---
 apiVersion: v1
 kind: Service
