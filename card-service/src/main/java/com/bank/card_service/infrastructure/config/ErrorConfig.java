@@ -5,6 +5,7 @@ import com.bank.common.dto.ErrorLogEvent;
 import com.bank.common.messaging.ErrorEventPublisher;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,28 +22,11 @@ public class ErrorConfig {
     @Value("${spring.application.name:api-gateway}")
     private String serviceName;
 
-    @Value("${spring.kafka.bootstrap-servers:kafka:9092}")
-    private String bootstrapServers;
-
     @Bean
-    public ProducerFactory<String, ErrorLogEvent> producerFactory() {
-        Map<String, Object> config = new HashMap<>();
-
-        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-                org.springframework.kafka.support.serializer.JsonSerializer.class);
-
-        return new DefaultKafkaProducerFactory<>(config);
-    }
-
-    @Bean
-    public KafkaTemplate<String, ErrorLogEvent> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
-    }
-
-    @Bean
-    public ErrorReporter errorReporter(KafkaTemplate<String, ErrorLogEvent> kafkaTemplate) {
+    public ErrorReporter errorReporter(
+            @Qualifier("errorKafkaTemplate")
+            KafkaTemplate<String, ErrorLogEvent> kafkaTemplate
+    ) {
         return new ErrorEventPublisher(kafkaTemplate, serviceName);
     }
 }

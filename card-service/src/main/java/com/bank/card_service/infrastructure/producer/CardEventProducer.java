@@ -12,10 +12,9 @@ public class CardEventProducer implements CardEventPublisher {
 
     private static final String TOPIC = "card-created-events";
 
-    private final KafkaTemplate<String, CardCreatedEvent> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public CardEventProducer(@org.springframework.beans.factory.annotation.Qualifier("cardKafkaTemplate")
-                             KafkaTemplate<String, CardCreatedEvent> kafkaTemplate) {
+    public CardEventProducer(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 

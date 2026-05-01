@@ -7,6 +7,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import com.bank.common.dto.ErrorLogEvent;
 import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -21,12 +22,7 @@ public class KafkaProducerConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    @PostConstruct
-    public void test() {
-        System.out.println("KAFKA CARD CONFIG LOADED");
-    }
-
-    private Map<String, Object> commonConfig() {
+    private Map<String, Object> config() {
         Map<String, Object> config = new HashMap<>();
 
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
@@ -37,19 +33,18 @@ public class KafkaProducerConfig {
         return config;
     }
 
-    @Bean("cardProducerFactory")
-    public ProducerFactory<String, CardCreatedEvent> cardProducerFactory() {
-        return new DefaultKafkaProducerFactory<>(commonConfig());
+    @Bean
+    public ProducerFactory<String, Object> producerFactory() {
+        return new DefaultKafkaProducerFactory<>(config());
     }
 
     @Bean("cardKafkaTemplate")
     public KafkaTemplate<String, CardCreatedEvent> cardKafkaTemplate() {
-        return new KafkaTemplate<>(cardProducerFactory());
+        return new KafkaTemplate(producerFactory());
     }
 
-    @Bean
-    @Primary
-    public KafkaTemplate<String, Object> kafkaTemplateGeneric() {
-        return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(commonConfig()));
+    @Bean("errorKafkaTemplate")
+    public KafkaTemplate<String, ErrorLogEvent> errorKafkaTemplate() {
+        return new KafkaTemplate(producerFactory());
     }
 }
