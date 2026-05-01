@@ -28,11 +28,11 @@ spec:
 
           resources:
             requests:
-              memory: "1.5Gi"
+              memory: "2Gi"
               cpu: "500m"
             limits:
-              memory: "2Gi"
-              cpu: "1000m"
+              memory: "3Gi"
+              cpu: "1500m"
           env:
             - name: SONAR_ES_BOOTSTRAP_CHECKS_DISABLE
               value: "true"
