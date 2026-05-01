@@ -2,8 +2,6 @@ package com.bank.common.auth_service.service;
 
 import com.bank.common.auth_service.dto.*;
 import com.bank.common.auth_service.entity.*;
-import com.bank.common.auth_service.dto.*;
-import com.bank.common.auth_service.entity.*;
 import com.bank.common.auth_service.exception.AccountBlockedException;
 import com.bank.common.auth_service.exception.InvalidCredentialsException;
 import com.bank.common.auth_service.repository.LoginAttemptRepository;
@@ -48,8 +46,7 @@ public class AuthService {
         this.loginAttemptRepository = loginAttemptRepository;
         this.loginSessionRepository = loginSessionRepository;
         this.refreshTokenRepository = refreshTokenRepository;
-        this.dummyHash = passwordEncoder.encode("dummy-password-for-timing-attack");
-        this.jwtService = jwtService;
+        this.dummyHash = passwordEncoder.encode(java.util.UUID.randomUUID().toString());        this.jwtService = jwtService;
         this.errorReporter = errorReporter;
     }
 
