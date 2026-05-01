@@ -21,9 +21,16 @@ spec:
             - name: POSTGRES_DB
               value: "accountdb"
             - name: POSTGRES_USER
-              value: "accountuser"
+              valueFrom:
+                secretKeyRef:
+                  name: account-db-secret
+                  key: username
             - name: POSTGRES_PASSWORD
-              value: "accountpass"
+              valueFrom:
+                secretKeyRef:
+                  name: acccount-db-secret
+                  key: password
+
 ---
 apiVersion: v1
 kind: Service

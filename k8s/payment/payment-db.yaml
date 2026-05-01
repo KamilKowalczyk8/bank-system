@@ -13,8 +13,17 @@ spec:
           ports: [ { containerPort: 5432 } ]
           env:
             - { name: POSTGRES_DB, value: "paymentdb" }
-            - { name: POSTGRES_USER, value: "paymentuser" }
-            - { name: POSTGRES_PASSWORD, value: "paymentpass" }
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: payment-db-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: payment-db-secret
+                  key: password
+
 ---
 apiVersion: v1
 kind: Service

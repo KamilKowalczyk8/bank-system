@@ -24,9 +24,15 @@ spec:
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://account-db:5432/accountdb"
             - name: SPRING_DATASOURCE_USERNAME
-              value: "accountuser"
+              valueFrom:
+                secretKeyRef:
+                  name: account-db-secret
+                  key: username
             - name: SPRING_DATASOURCE_PASSWORD
-              value: "accountpass"
+              valueFrom:
+                secretKeyRef:
+                  name: account-db-secret
+                  key: password
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
               value: kafka:29092
 

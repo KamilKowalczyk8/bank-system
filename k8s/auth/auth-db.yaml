@@ -21,9 +21,15 @@ spec:
             - name: POSTGRES_DB
               value: "authdb"
             - name: POSTGRES_USER
-              value: "authuser"
+              valueFrom:
+                secretKeyRef:
+                  name: auth-db-secret
+                  key: username
             - name: POSTGRES_PASSWORD
-              value: "authpass"
+              valueFrom:
+                secretKeyRef:
+                  name: auth-db-secret
+                  key: password
 
 ---
 # -----------------------------------------------------

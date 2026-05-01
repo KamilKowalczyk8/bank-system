@@ -21,9 +21,15 @@ spec:
             - name: POSTGRES_DB
               value: "customerdb"
             - name: POSTGRES_USER
-              value: "custouser"
+              valueFrom:
+                secretKeyRef:
+                  name: customer-db-secret
+                  key: username
             - name: POSTGRES_PASSWORD
-              value: "custopass"
+              valueFrom:
+                secretKeyRef:
+                  name: customer-db-secret
+                  key: password
 ---
 apiVersion: v1
 kind: Service

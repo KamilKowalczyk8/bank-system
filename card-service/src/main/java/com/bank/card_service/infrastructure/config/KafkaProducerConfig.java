@@ -22,7 +22,7 @@ public class KafkaProducerConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    private Map<String, Object> config() {
+    private Map<String, Object> baseConfig() {
         Map<String, Object> config = new HashMap<>();
 
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
@@ -34,17 +34,22 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public ProducerFactory<String, Object> producerFactory() {
-        return new DefaultKafkaProducerFactory<>(config());
+    public ProducerFactory<String, CardCreatedEvent> cardProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(baseConfig());
     }
 
     @Bean("cardKafkaTemplate")
     public KafkaTemplate<String, CardCreatedEvent> cardKafkaTemplate() {
-        return new KafkaTemplate(producerFactory());
+        return new KafkaTemplate<>(cardProducerFactory());
+    }
+
+    @Bean
+    public ProducerFactory<String, ErrorLogEvent> errorProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(baseConfig());
     }
 
     @Bean("errorKafkaTemplate")
     public KafkaTemplate<String, ErrorLogEvent> errorKafkaTemplate() {
-        return new KafkaTemplate(producerFactory());
+        return new KafkaTemplate<>(errorProducerFactory());
     }
 }

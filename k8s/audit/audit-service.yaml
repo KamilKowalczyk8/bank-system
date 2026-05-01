@@ -18,10 +18,26 @@ spec:
           ports:
             - containerPort: 8080
           env:
-            - name: SPRING_DATA_MONGODB_URI
-              value: "mongodb://admin:admin123@audit-mongodb-service:27017/auditdb?authSource=admin"
+            - name: SPRING_DATA_MONGODB_HOST
+              value: "audit-mongodb-service"
+            - name: SPRING_DATA_MONGODB_PORT
+              value: "27017"
+            - name: SPRING_DATA_MONGODB_DATABASE
+              value: "auditdb"
+            - name: SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE
+              value: "admin"
+            - name: SPRING_DATA_MONGODB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: audit-db-secret
+                  key: username
+            - name: SPRING_DATA_MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: audit-db-secret
+                  key: password
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
-              value: kafka:29092
+              value: "kafka:29092"
 ---
 apiVersion: v1
 kind: Service

@@ -24,11 +24,17 @@ spec:
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://customer-db:5432/customerdb"
             - name: SPRING_DATASOURCE_USERNAME
-              value: "custouser"
+              valueFrom:
+                secretKeyRef:
+                  name: customer-db-secret
+                  key: username
             - name: SPRING_DATASOURCE_PASSWORD
-              value: "custopass"
+              valueFrom:
+                secretKeyRef:
+                  name: customer-db-secret
+                  key: password
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
-              value: bank-kafka:29092
+              value: kafka:29092
 ---
 apiVersion: v1
 kind: Service

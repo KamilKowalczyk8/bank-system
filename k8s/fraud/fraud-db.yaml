@@ -12,9 +12,18 @@ spec:
           image: postgres:16
           ports: [ { containerPort: 5432 } ]
           env:
-            - { name: POSTGRES_DB, value: "fraudb" }
-            - { name: POSTGRES_USER, value: "frauduser" }
-            - { name: POSTGRES_PASSWORD, value: "fraudpassword" }
+            - name: POSTGRES_DB
+              value: "fraudb"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: fraud-db-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fraud-db-secret
+                  key: password
 ---
 apiVersion: v1
 kind: Service

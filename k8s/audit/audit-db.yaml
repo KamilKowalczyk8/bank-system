@@ -19,9 +19,15 @@ spec:
             - containerPort: 27017
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
-              value: "admin"
+              valueFrom:
+                secretKeyRef:
+                  name: audit-db-secret
+                  key: username
             - name: MONGO_INITDB_ROOT_PASSWORD
-              value: "admin123"
+              valueFrom:
+                secretKeyRef:
+                  name: audit-db-secret
+                  key: password
 ---
 apiVersion: v1
 kind: Service
