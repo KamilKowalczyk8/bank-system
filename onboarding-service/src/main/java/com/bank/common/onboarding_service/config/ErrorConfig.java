@@ -25,7 +25,7 @@ public class ErrorConfig {
     private String bootstrapServers;
 
     @Bean
-    public ProducerFactory<String, ErrorLogEvent> producerFactory() {
+    public ProducerFactory<String, Object> producerFactory() {
         Map<String, Object> config = new HashMap<>();
 
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
@@ -37,12 +37,12 @@ public class ErrorConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, ErrorLogEvent> kafkaTemplate() {
+    public KafkaTemplate<String, Object> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
     @Bean
-    public ErrorReporter errorReporter(KafkaTemplate<String, ErrorLogEvent> kafkaTemplate) {
+    public ErrorReporter errorReporter(KafkaTemplate<String, Object> kafkaTemplate) {
         return new ErrorEventPublisher(kafkaTemplate, serviceName);
     }
 }

@@ -18,7 +18,7 @@ public class ErrorEventPublisher implements ErrorReporter {
     private final KafkaTemplate<String, ErrorLogEvent> kafkaTemplate;
     private final String serviceName;
 
-    public ErrorEventPublisher(KafkaTemplate<String, ErrorLogEvent> kafkaTemplate,
+    public ErrorEventPublisher(KafkaTemplate<String, Object> kafkaTemplate,
                                String serviceName) {
         this.kafkaTemplate = kafkaTemplate;
         this.serviceName = serviceName;
