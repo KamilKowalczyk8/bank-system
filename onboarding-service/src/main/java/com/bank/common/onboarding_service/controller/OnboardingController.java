@@ -22,7 +22,7 @@ public class OnboardingController {
     private final OnboardingService onboardingService;
 
     @Operation(
-            summary = "Rejestracja nowego klienta (One-Click)",
+            summary = "Rejestracja nowego klienta",
             description = "Przyjmuje pełne dane klienta. Tworzy dane logowania w auth-service, a następnie profil w customer-service. W przypadku błędu wycofuje transakcję (Wzorzec Saga)."
     )
     @ApiResponses(value = {

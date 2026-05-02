@@ -30,8 +30,15 @@ public class OnboardingService {
                 request.phoneNumber()
         );
 
-        log.info("1. Wysyłam żądanie utworzenia konta do auth-service...");
-        AuthResponse authResponse = authServiceClient.registerAccount(authRequest);
+        AuthResponse authResponse;
+        try {
+            log.info("1. Wysyłam żądzanie utworzenia konta do auth-service...");
+            authResponse = authServiceClient.registerAccount(authRequest);
+        } catch (Exception e) {
+            log.error("Szczegół błędu (Z kroku 1): {}", e.getMessage());
+            log.error("Błąd! Nie udało się połączyć z auth-service lub zapytanie zostało odrzucone");
+            throw new IllegalStateException("Inicjalizacja onboardingu nie powiodła sie na etpaie autoryzacji: " + e.getMessage());
+        }
 
         String generatedAuthId = authResponse.authId();
         log.info("Sukces! Z auth-service otrzymano authId: {}", generatedAuthId);
