@@ -1,20 +1,12 @@
 package com.bank.common.onboarding_service.config;
 
 import com.bank.common.api.ErrorReporter;
-import com.bank.common.dto.ErrorLogEvent;
 import com.bank.common.messaging.ErrorEventPublisher;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringSerializer;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.kafka.core.KafkaTemplate;
 
 @Configuration
 public class ErrorConfig {
@@ -22,31 +14,8 @@ public class ErrorConfig {
     @Value("${spring.application.name:api-gateway}")
     private String serviceName;
 
-    @Value("${spring.kafka.bootstrap-servers:kafka:9092}")
-    private String bootstrapServers;
-
     @Bean
-    public ProducerFactory<String, ErrorLogEvent> errorProducerFactory() {
-        Map<String, Object> config = new HashMap<>();
-
-        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-                org.springframework.kafka.support.serializer.JsonSerializer.class);
-
-        return new DefaultKafkaProducerFactory<>(config);
-    }
-
-    @Bean("errorKafkaTemplate")
-    public KafkaTemplate<String, ErrorLogEvent> errorKafkaTemplate() {
-        return new KafkaTemplate<>(errorProducerFactory());
-    }
-
-    @Bean
-    public ErrorReporter errorReporter(
-            @Qualifier("errorKafkaTemplate")
-            KafkaTemplate<String, ErrorLogEvent> kafkaTemplate
-    ) {
+    public ErrorReporter errorReporter(KafkaTemplate<String, Object> kafkaTemplate) {
         return new ErrorEventPublisher(kafkaTemplate, serviceName);
     }
 }
