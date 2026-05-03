@@ -15,7 +15,7 @@ public class ErrorEventPublisher implements ErrorReporter {
     private static final Logger log = LoggerFactory.getLogger(ErrorEventPublisher.class);
     private static final String TOPIC = "error-logs-topic";
 
-    private final KafkaTemplate<String, ErrorLogEvent> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final String serviceName;
 
     public ErrorEventPublisher(KafkaTemplate<String, Object> kafkaTemplate,

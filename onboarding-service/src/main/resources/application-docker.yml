@@ -1,6 +1,6 @@
 spring:
   kafka:
-    bootstrap-servers: bank-kafka:29092
+    bootstrap-servers: bank-kafka:9092
 
 services:
   auth:
