@@ -23,24 +23,24 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # Krok 3a budowanie jara ale najpierw biblioteka bank-common(dockerfile)
+      # Krok 3 budowanie jara ale najpierw biblioteka bank-common(dockerfile)
       - name: Build bank-common
         working-directory: ./bank-common
         run: mvn clean install -DskipTests
 
-      # Krok 3b pobranie service_name i zbudowanie właściwego serwisu
+      # Krok 4 pobranie service_name i zbudowanie właściwego serwisu
       - name: Build ${{ inputs.service_name }}
         working-directory: ./${{ inputs.service_name }}
         run: mvn clean package -DskipTests
 
-      # Krok 4 logowanie do dockera
+      # Krok 5 logowanie do dockera
       - name: Login to Docker
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # krok 5 budowanie obrazu dockera i wysyłanie
+      # krok 6 budowanie obrazu dockera i wysyłanie
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
