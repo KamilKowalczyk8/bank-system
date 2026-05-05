@@ -23,10 +23,7 @@ public class ErrorConfig {
     private String serviceName;
 
     @Bean
-    public ErrorReporter errorReporter(
-            @Qualifier("errorKafkaTemplate")
-            KafkaTemplate<String, ErrorLogEvent> kafkaTemplate
-    ) {
+    public ErrorReporter errorReporter(KafkaTemplate<String, Object> kafkaTemplate) {
         return new ErrorEventPublisher(kafkaTemplate, serviceName);
     }
 }
