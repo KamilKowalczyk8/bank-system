@@ -72,8 +72,8 @@ jobs:
           
           cd ./k8s/$location
           
-          sed -i "s|image: $username/bank-$service:.*|image: $username/bank-$service:$sha|g" $service.yml
+          sed -i "s|image: $username/bank-$service:.*|image: $username/bank-$service:$sha|g" $service.yaml
           
-          git add $service.yml
+          git add $service.yaml
           git commit -m "Auto-update $service image tag to $sha [skip ci]" || echo "No changes to commit"
           git push
