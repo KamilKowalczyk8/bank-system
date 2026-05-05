@@ -76,4 +76,8 @@ jobs:
           
           git add $service.yaml
           git commit -m "Auto-update $service image tag to $sha [skip ci]" || echo "No changes to commit"
+          
+          #pobieranie zmian przed wypchnięciem
+          git pull --rebase origin main
+          
           git push
