@@ -77,7 +77,18 @@ jobs:
           git add $service.yaml
           git commit -m "Auto-update $service image tag to $sha [skip ci]" || echo "No changes to commit"
           
-          #pobieranie zmian przed wypchnięciem
-          git pull --rebase --autostash origin main
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main
           
-          git push
+            if git push; then
+              echo "Sukces! Zmiany wypchnięte."
+              exit 0
+            fi
+          
+            echo "Kolizja z innym mikroserwisem! Próba $i z 5... Czekam na odblokowanie GitHuba."
+            # Zatrzymuje skrypt na losowy czas (od 1 do 5 sekund), aby zniwelować równoczesne uderzenia
+            sleep $((1 + RANDOM % 5))
+          done
+          
+          echo "Błąd krytyczny: Nie udało się wypchnąć zmian po 5 próbach."
+          exit 1
