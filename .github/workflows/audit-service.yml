@@ -6,6 +6,7 @@ on:
     paths:
       - 'audit-service/**'
       - 'bank-common/**'
+      - '.github/workflows/**'
 
 permissions:
   contents: write

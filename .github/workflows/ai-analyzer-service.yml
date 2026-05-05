@@ -6,6 +6,7 @@ on:
     paths:
       - 'ai-analyzer-service/**'
       - 'bank-common/**'
+      - '.github/workflows/**'
 
 permissions:
   contents: write

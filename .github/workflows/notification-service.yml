@@ -6,6 +6,7 @@ on:
     paths:
       - 'notification-service/**'
       - 'bank-common/**'
+      - '.github/workflows/**'
 
 permissions:
   contents: write

@@ -6,6 +6,7 @@ on:
     paths:
       - 'api-gateway/**'
       - 'bank-common/**'
+      - '.github/workflows/**'
 
 permissions:
   contents: write

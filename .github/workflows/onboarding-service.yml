@@ -6,6 +6,7 @@ on:
     paths:
       - 'onboarding-service/**'
       - 'bank-common/**'
+      - '.github/workflows/**'
 
 permissions:
   contents: write
