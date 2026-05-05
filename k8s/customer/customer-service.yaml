@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: customer-service
-          image: kamilkowalczyk8/bank-customer-service:fc970bbf768784b9a55400a5c47ae0fed7a10372
+          image: kamilkowalczyk8/bank-customer-service:083d3fa7cde0f2283b13c6d54b85ce57c0edde4c
           imagePullPolicy: Always
           ports:
             - containerPort: 8082
