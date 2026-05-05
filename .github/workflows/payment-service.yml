@@ -12,4 +12,5 @@ jobs:
     uses: ./.github/workflows/template-microservice-ci.yml
     with:
       service_name: 'payment-service'
+      service_location: 'payments'
     secrets: inherit

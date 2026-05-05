@@ -12,4 +12,5 @@ jobs:
     uses: ./.github/workflows/template-microservice-ci.yml
     with:
       service_name: 'notification-service'
+      service_location: 'notification'
     secrets: inherit

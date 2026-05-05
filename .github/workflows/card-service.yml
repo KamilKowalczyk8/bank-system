@@ -12,4 +12,5 @@ jobs:
     uses: ./.github/workflows/template-microservice-ci.yml
     with:
       service_name: 'card-service'
+      service_location: 'card'
     secrets: inherit

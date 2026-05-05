@@ -12,4 +12,5 @@ jobs:
     uses: ./.github/workflows/template-microservice-ci.yml
     with:
       service_name: 'ai-analyzer-service'
+      service_location: 'ai-analyzer-service'
     secrets: inherit

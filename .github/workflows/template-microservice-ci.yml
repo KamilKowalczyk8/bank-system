@@ -6,6 +6,12 @@ on:
       service_name:
         required: true
         type: string
+      service_location:
+        required: true
+        type: string
+
+permissions:
+  contents: write
 
 jobs:
   build-and-push:
@@ -52,4 +58,22 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/bank-${{ inputs.service_name }}:${{ github.sha }}
 
 
-
+      # krok7 aktualizacja manifestu dla argocd
+      - name: Update K8s manifest
+        env:
+          service: ${{ inputs.service_name }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          location: ${{ inputs.service_location }}
+          sha: ${{ github.sha }}
+        run: |
+          # Konfiguracja wirtualnego uzykownika gita
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions Bot"
+          
+          cd ./k8s/$location
+          
+          sed -i "s|image: $username/bank-$service:.*|image: $username/bank-$service:$sha|g" deployment.yaml
+          
+          git add deployment.yaml
+          git commit -m "Auto-update $service image tag to $sha [skip ci]" || echo "No changes to commit"
+          git push

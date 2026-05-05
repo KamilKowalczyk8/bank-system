@@ -12,4 +12,5 @@ jobs:
     uses: ./.github/workflows/template-microservice-ci.yml
     with:
       service_name: 'customer-service'
+      service_location: 'customer'
     secrets: inherit
