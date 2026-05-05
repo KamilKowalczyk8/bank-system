@@ -7,6 +7,9 @@ on:
       - 'fraud-service/**'
       - 'bank-common/**'
 
+permissions:
+  contents: write
+
 jobs:
   call-template:
     uses: ./.github/workflows/template-microservice-ci.yml
