@@ -1,20 +1,14 @@
 package com.bank.card_service.infrastructure.config;
 
 import com.bank.common.api.ErrorReporter;
-import com.bank.common.dto.ErrorLogEvent;
 import com.bank.common.messaging.ErrorEventPublisher;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
+import com.bank.common.dto.ErrorLogEvent;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.kafka.core.KafkaTemplate;
 
 @Configuration
 public class ErrorConfig {
@@ -23,8 +17,11 @@ public class ErrorConfig {
     private String serviceName;
 
     @Bean
-    public ErrorReporter errorReporter(KafkaTemplate<String, Object> kafkaTemplate) {
-        return new ErrorEventPublisher(kafkaTemplate, serviceName);
+    public ErrorReporter errorReporter(
+            @Qualifier("errorKafkaTemplate")
+            KafkaTemplate<String, ErrorLogEvent> errorKafkaTemplate) {
+
+        return new ErrorEventPublisher(errorKafkaTemplate, serviceName);
     }
 }
 
