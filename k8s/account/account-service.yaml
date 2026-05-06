@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: account-service
-          image: kamilkowalczyk8/bank-account-service:7794efe9f9d766bd251bba9f337d101bcaf97fbf
+          image: kamilkowalczyk8/bank-account-service:b9d0b95d1e44e6e3227a1bef2c030a52a27a3b6e
           imagePullPolicy: Always
           ports:
             - containerPort: 8084
