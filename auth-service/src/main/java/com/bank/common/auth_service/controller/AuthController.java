@@ -1,6 +1,11 @@
 package com.bank.common.auth_service.controller;
 
 import com.bank.common.auth_service.dto.*;
+import com.bank.common.auth_service.dto.login.*;
+import com.bank.common.auth_service.dto.register.RegisterRequest;
+import com.bank.common.auth_service.dto.register.RegisterResponse;
+import com.bank.common.auth_service.dto.token.RefreshTokenRequest;
+import com.bank.common.auth_service.dto.token.RefreshTokenResponse;
 import com.bank.common.auth_service.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

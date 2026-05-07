@@ -1,6 +1,11 @@
 package com.bank.common.auth_service.service;
 
 import com.bank.common.auth_service.dto.*;
+import com.bank.common.auth_service.dto.login.*;
+import com.bank.common.auth_service.dto.register.RegisterRequest;
+import com.bank.common.auth_service.dto.register.RegisterResponse;
+import com.bank.common.auth_service.dto.token.RefreshTokenRequest;
+import com.bank.common.auth_service.dto.token.RefreshTokenResponse;
 import com.bank.common.auth_service.entity.*;
 import com.bank.common.auth_service.exception.AccountBlockedException;
 import com.bank.common.auth_service.exception.InvalidCredentialsException;
@@ -206,35 +211,58 @@ public class AuthService {
         loginSessionRepository.save(session);
 
         User user = session.getUser();
-        if (user.getStatus() == UserStatus.PENDING) {
-            user.setStatus(UserStatus.ACTIVE);
-            log.info("Konto {} zostało w pełni aktywowane po pierwszym logowaniu.", user.getLogin());
+
+        if (!user.isPhoneVerified()) {
+            user.setPhoneVerified(true);
+            log.info("Numer telefonu dla użytkownika {} został zweryfikowany.", user.getLogin());
         }
 
-        log.info("Logowanie zakończone pełnym sukcesem dla: {}", user.getLogin());
-
+        //czysczenie tokenów przed wydaniem nowych
         refreshTokenRepository.revokeAllUserTokens(user);
 
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
+        //ustawienie hasła
+        if (user.isTempPassword()) {
+            log.info("Użytkownik {} loguje się pierwszy raz. Wymagana zmiana hasła.", user.getLogin());
 
-        RefreshToken refreshTokenEntity = RefreshToken.builder()
-                .user(user)
-                .token(refreshToken)
-                .expiresAt(Instant.now().plusMillis(refreshExpiration))
-                .revoked(false)
-                .build();
+            //danie mu chwilowego tokena do zmiany hasła który trwa 6 min
+            String restrictedToken = jwtService.generateRestrictedToken(user);
 
-        refreshTokenRepository.save(refreshTokenEntity);
+            return new LoginStep3Response(
+                    "Wymagana zmiana hasła startowego",
+                    restrictedToken,
+                    null,
+                    true
+            );
 
-        return new LoginStep3Response(
-                "Logowanie pomyślne",
-                accessToken,
-                refreshToken
-        );
+        } else {
 
+            if (user.getStatus() == UserStatus.PENDING) {
+                user.setStatus(UserStatus.ACTIVE);
+                log.info("Konto {} zostało w pełni aktywowane po pierwszym logowaniu.", user.getLogin());
+            }
+
+            log.info("Logowanie zakończone pełnym sukcesem dla: {}", user.getLogin());
+
+            String accessToken = jwtService.generateAccessToken(user);
+            String refreshToken = jwtService.generateRefreshToken(user);
+
+            RefreshToken refreshTokenEntity = RefreshToken.builder()
+                    .user(user)
+                    .token(refreshToken)
+                    .expiresAt(Instant.now().plusMillis(refreshExpiration))
+                    .revoked(false)
+                    .build();
+
+            refreshTokenRepository.save(refreshTokenEntity);
+
+            return new LoginStep3Response(
+                    "Logowanie pomyślne",
+                    accessToken,
+                    refreshToken,
+                    false
+            );
+        }
     }
-
 
     @Transactional(noRollbackFor = InvalidCredentialsException.class)
     public RefreshTokenResponse refreshToken(RefreshTokenRequest request) {

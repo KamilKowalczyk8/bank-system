@@ -1,4 +1,4 @@
-package com.bank.common.auth_service.dto;
+package com.bank.common.auth_service.dto.login;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -11,6 +11,9 @@ public record LoginStep3Response(
         String accessToken,
 
         @Schema(description = "Długo żyjący token do odświeżania sesji (np. 24h)")
-        String refreshToken
+        String refreshToken,
+
+        @Schema(description = "\"Flaga informująca, czy użytkownik musi ustawić własne hasło przed dostępem do banku")
+        boolean requiresPasswordChange
 ) {
 }

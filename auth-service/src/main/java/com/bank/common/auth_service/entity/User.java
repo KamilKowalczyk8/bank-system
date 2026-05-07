@@ -28,6 +28,9 @@ public class User {
     @Column(name = "temp_password", nullable = false)
     private boolean tempPassword;
 
+    @Column(name = "is_phone_verified", nullable = false)
+    private boolean isPhoneVerified = false;
+
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
