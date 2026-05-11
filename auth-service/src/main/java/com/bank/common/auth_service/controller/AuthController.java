@@ -17,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -83,6 +85,27 @@ public class AuthController {
         LoginStep3Response response = authService.verifyLoginStep3(request);
         return ResponseEntity.ok(response);
     }
+
+    @Operation(
+            summary = "Ustawienie pierwszego, stałego hasła",
+            description = "Pozwala na zmianę hasła tymczasowego na stałe. Wymaga autoryzacji ograniczonym tokenem. Zwraca docelową parę tokenów (Access i Refresh), odblokowując pełny dostęp do banku."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Hasło zmienione pomyślnie, zwraca pełne tokeny JWT"),
+            @ApiResponse(responseCode = "400", description = "Błąd walidacji danych (np. hasło nie spełnia rygorystycznych wymagań regex)"),
+            @ApiResponse(responseCode = "401", description = "Brak autoryzacji lub token wygasł"),
+            @ApiResponse(responseCode = "403", description = "Odmowa dostępu: brak zweryfikowanego telefonu lub konto ma już stałe hasło")
+    })
+    @PostMapping("/first-password-setup")
+    public ResponseEntity<FirstPasswordSetupResponse> setupFirstPassword(
+            @RequestBody @Valid FirstPasswordSetupRequest request,
+            Principal principal
+    ) {
+        String login = principal.getName();
+        FirstPasswordSetupResponse response = authService.setupFirstPassword(login, request);
+        return ResponseEntity.ok(response);
+    }
+
 
     @Operation(summary = "Odświeżanie sesji (Refresh Token Rotation)", description = "Wymienia ważny Refresh Token na nową parę tokenów (Access i Refresh). Automatycznie unieważnia stary token. Zabezpiecza przed Replay Attack.")
     @ApiResponses(value = {

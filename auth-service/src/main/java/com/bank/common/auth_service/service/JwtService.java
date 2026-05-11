@@ -49,7 +49,7 @@ public class JwtService {
     public String generateRestrictedToken(User user) {
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("role", "ROLE_PRE_AUTH_PASSWORD_CHANGE");
-        extraClaims.put("token_type", "RESCTRICTED");
+        extraClaims.put("token_type", "RESTRICTED");
 
         long shortExpiration = 6 * 60 * 1000;
 
@@ -88,6 +88,24 @@ public class JwtService {
     private SecretKey getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    //metody do odczytu tokena
+    public String extractLogin(String token) {
+        return extractAllClaims(token).getSubject();
+    }
+
+    public String extractRole(String token) {
+        return extractAllClaims(token).get("role", String.class);
+    }
+
+
+    private io.jsonwebtoken.Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSignKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }
 

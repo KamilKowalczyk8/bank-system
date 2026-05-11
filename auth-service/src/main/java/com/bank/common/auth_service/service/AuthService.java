@@ -265,6 +265,58 @@ public class AuthService {
     }
 
     @Transactional(noRollbackFor = InvalidCredentialsException.class)
+    public FirstPasswordSetupResponse setupFirstPassword(String login, FirstPasswordSetupRequest request) {
+        log.info("Rozpoczęto procedurę ustawiania pierwszego hasła dla loginu: {}", login);
+
+        User user = userRepository.findByLogin(login)
+                .orElseThrow(() -> new InvalidCredentialsException("Nie znaleziono takiego użytkownika"));
+
+        if (!user.isPhoneVerified()) {
+            throw new SecurityException("Numer telefonu nie jest zweryfikowany");
+        }
+
+        if (!user.isTempPassword()) {
+            throw new IllegalStateException("Użytkownik ma już stałe hasło");
+        }
+
+        boolean passwordMatches = passwordEncoder.matches(request.newPassword(), user.getPasswordHash());
+
+        if (passwordMatches) {
+            throw new IllegalStateException("Hasło jest identyczne jak poprzednie wymyśl nowe");
+        }
+
+        String newPassword = passwordEncoder.encode(request.newPassword());
+        user.setPasswordHash(newPassword);
+        user.setTempPassword(false);
+
+        user.setPasswordChangedAt(Instant.now());
+
+        user.setStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+
+        refreshTokenRepository.revokeAllUserTokens(user);
+
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        RefreshToken refreshTokenEntity = RefreshToken.builder()
+                .user(user)
+                .token(refreshToken)
+                .expiresAt(Instant.now().plusMillis(refreshExpiration))
+                .revoked(false)
+                .build();
+
+        refreshTokenRepository.save(refreshTokenEntity);
+
+        return new FirstPasswordSetupResponse(
+                "Pomyślnie ustawiono nowe hasło",
+                accessToken,
+                refreshToken
+        );
+
+    }
+
+    @Transactional(noRollbackFor = InvalidCredentialsException.class)
     public RefreshTokenResponse refreshToken(RefreshTokenRequest request) {
 
         RefreshToken storedToken = refreshTokenRepository.findByToken(request.refreshToken())

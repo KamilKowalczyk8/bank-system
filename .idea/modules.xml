@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ai-analyzer-service/ai-analyzer-service.iml" filepath="$PROJECT_DIR$/ai-analyzer-service/ai-analyzer-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/auth-service/auth-service.iml" filepath="$PROJECT_DIR$/auth-service/auth-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/bank-system.iml" filepath="$PROJECT_DIR$/.idea/bank-system.iml" />
       <module fileurl="file://$PROJECT_DIR$/onboarding-service/onboarding-service.iml" filepath="$PROJECT_DIR$/onboarding-service/onboarding-service.iml" />
     </modules>

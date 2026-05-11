@@ -19,7 +19,7 @@
         </processorPath>
         <module name="customer-service" />
       </profile>
-      <profile name="Annotation profile for onboarding-service" enabled="true">
+      <profile name="Annotation profile for account-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
