@@ -99,9 +99,8 @@ public class AuthController {
     @PostMapping("/first-password-setup")
     public ResponseEntity<FirstPasswordSetupResponse> setupFirstPassword(
             @RequestBody @Valid FirstPasswordSetupRequest request,
-            Principal principal
+            @RequestHeader("X-User-Login") String login
     ) {
-        String login = principal.getName();
         FirstPasswordSetupResponse response = authService.setupFirstPassword(login, request);
         return ResponseEntity.ok(response);
     }

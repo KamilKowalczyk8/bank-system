@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -42,7 +43,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, GatewayHeaderAuthFilter gatewayHeaderAuthFilter) throws Exception {
             http
                     .csrf(AbstractHttpConfigurer::disable)
 
@@ -62,7 +63,9 @@ public class SecurityConfig {
                             .hasAuthority("ROLE_PRE_AUTH_PASSWORD_CHANGE")
                             .anyRequest().authenticated()
                     );
-            //TODO: wpięcie filtra JWT
+
+            http.addFilterBefore(gatewayHeaderAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
             return http.build();
     }
 }
