@@ -5,10 +5,12 @@ metadata:
   namespace: argocd
 spec:
   project: default
+
   source:
     repoURL: 'https://prometheus-community.github.io/helm-charts'
     targetRevision: 58.2.1
     chart: kube-prometheus-stack
+
     helm:
       values: |
         prometheusOperator:
@@ -16,7 +18,25 @@ spec:
             enabled: false
             patch:
               enabled: false
-    #usuwanie webhoków gdyż w srodowisku lokalnym są dla nas zbędne
+        #wyłączenie webhoków TLS gdyż w srodowisku lokalnym są dla nas zbędne
+
+        #odchudzanie prometheusa
+        prometheus:
+            prometheusSpec:
+              scrapeInterval: "1m"  #zbieranie danych co 60s zamiast jak domyslnie 15s
+              evaluationInterval: "1m"
+              retention: "12h" #trzymanie historii tylko przez 12 godzin zamaist domyslnie przez 10 dni
+              retentionSize: "999MB" #Limit dyskowy na
+              resources:
+                requests:
+                  memory: 512Mi
+                limits:
+                  memory: 2Gi #blokowanie zjadania ramu na 2gb
+
+        nodeExporter:
+            enabled: false
+        
+
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: monitoring
@@ -27,5 +47,4 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
-
 #plik mówi wejdz na repo prometheusa community i pobierz wykres (helm chart) i zainstaluj go na klastrze monitoring
