@@ -42,6 +42,11 @@ spec:
           enabled: false
         kubeScheduler:
           enabled: false
+        
+        kubelet:
+          serviceMonitor:
+            https: true
+            insecureSkipVerify: true
 
   destination:
     server: 'https://kubernetes.default.svc'
