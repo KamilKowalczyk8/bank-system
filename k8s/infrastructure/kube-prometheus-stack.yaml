@@ -18,5 +18,6 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - ServerSideApply=true
 
 #plik mówi wejdz na repo prometheusa community i pobierz wykres (helm chart) i zainstaluj go na klastrze monitoring
