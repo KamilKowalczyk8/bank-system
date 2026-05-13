@@ -36,6 +36,12 @@ spec:
         nodeExporter:
             enabled: false
         
+        kubeControllerManager:
+          enabled: false
+        kubeEtcd:
+          enabled: false
+        kubeScheduler:
+          enabled: false
 
   destination:
     server: 'https://kubernetes.default.svc'
