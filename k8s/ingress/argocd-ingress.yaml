@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-ingress
+  namespace: argocd # domyślny namesapce argocd
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS" # argo wymusza szyfrowanie HTTPS dlatego potrzebna ta adnotacja żeby wiedział jak gadac
+spec:
+  rules:
+    - host: argocd.bank.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 443
