@@ -19,7 +19,7 @@
         </processorPath>
         <module name="customer-service" />
       </profile>
-      <profile name="Annotation profile for account-service" enabled="true">
+      <profile name="Annotation profile for document-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -33,6 +33,7 @@
         <module name="api-gateway" />
         <module name="card-service" />
         <module name="account-service" />
+        <module name="document-service" />
         <module name="onboarding-service" />
       </profile>
     </annotationProcessing>
@@ -50,6 +51,7 @@
       <module name="bank-common" options="-parameters" />
       <module name="card-service" options="-parameters" />
       <module name="customer-service" options="-parameters" />
+      <module name="document-service" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
       <module name="fraud-service" options="-parameters" />
       <module name="notification-service" options="-parameters" />

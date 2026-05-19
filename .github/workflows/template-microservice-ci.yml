@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Krok 1: Pobieranie kodu (fetch-depth: 0 jest potrzebne do SonarCloud)
+      # Krok 1: Pobieranie kodu (fetch-depth jest potrzebne do SonarCloud)
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
