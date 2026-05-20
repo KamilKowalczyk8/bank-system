@@ -1,6 +1,5 @@
 package com.bank.document_service.domain;
 
 public enum DocumentType {
-    ACCOUNT_CONTRACT,
-    TEMPORARY_CREDENTIALS
+    ACCOUNT_CONTRACT
 }

@@ -17,7 +17,7 @@ public class Document {
         this.id = UUID.randomUUID();
         this.userId = userId;
         this.createdAt = LocalDateTime.now();
-        this.type = type;
+        this.type = DocumentType.ACCOUNT_CONTRACT;
         this.status = DocumentStatus.PENDING;
     }
 
@@ -31,7 +31,7 @@ public class Document {
     }
 
 
-    //gettery
+
     public UUID getId() {
         return id;
     }

@@ -84,7 +84,9 @@ public class OnboardingService {
                     request.pesel()
             );
 
-            onboardingEventProducer.sendCsutomerRegisteredEvent(event);
+            //TODO : Wysyłanie loginu oraz hasła tymczasowego do document-service
+
+            onboardingEventProducer.sendCustomerRegisteredEvent(event);
             log.info("Wysłano powiadomienie na Kafkę o nowym kliencie.");
 
         } catch (Exception e) {

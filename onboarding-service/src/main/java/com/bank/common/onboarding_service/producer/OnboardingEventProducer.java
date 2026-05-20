@@ -15,7 +15,7 @@ public class OnboardingEventProducer {
 
     private static final String TOPIC = "customer-registration-events";
 
-    public void sendCsutomerRegisteredEvent(CustomerRegisteredEvent event) {
+    public void sendCustomerRegisteredEvent(CustomerRegisteredEvent event) {
         log.info("Wysyłam zdarzenie rejestracji do Kafki (Temat: {}): {}", TOPIC, event);
 
         kafkaTemplate.send(TOPIC, event.authId(), event);
