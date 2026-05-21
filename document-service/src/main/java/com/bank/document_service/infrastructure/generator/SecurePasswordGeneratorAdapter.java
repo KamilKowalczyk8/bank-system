@@ -15,7 +15,6 @@ public class SecurePasswordGeneratorAdapter implements PasswordGeneratorPort {
 
     private static final String PASSWORD_ALLOW_BASE = CHAR_LOWER + CHAR_UPPER + NUMBER + SPECIAL;
 
-    //Bezpieczniejszy random
     private final SecureRandom secureRandom = new SecureRandom();
 
     private static final int PASSWORD_LENGTH = 11;
