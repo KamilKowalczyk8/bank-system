@@ -81,7 +81,11 @@ public class OnboardingService {
             CustomerRegisteredEvent event = new CustomerRegisteredEvent(
                     generatedAuthId,
                     request.email(),
-                    request.pesel()
+                    request.phoneNumber(),
+                    request.firstName(),
+                    request.lastName(),
+                    authResponse.authId(),  //login z auth
+                    authResponse.temporaryPassword()
             );
 
             //TODO : Wysyłanie loginu oraz hasła tymczasowego do document-service

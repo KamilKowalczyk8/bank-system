@@ -1,5 +1,6 @@
 package com.bank.document_service.infrastructure.pdf;
 
+import com.bank.common.api.ErrorReporter;
 import com.bank.document_service.application.port.PdfGeneratorPort;
 import com.lowagie.text.Document;
 import com.lowagie.text.Element;
@@ -14,6 +15,12 @@ import java.util.UUID;
 
 @Component
 public class OpenPdfAdapter implements PdfGeneratorPort {
+
+    private final ErrorReporter errorReporter;
+
+    public OpenPdfAdapter(ErrorReporter errorReporter) {
+        this.errorReporter = errorReporter;
+    }
 
     @Override
     public byte[] generateContract(UUID userId, String firstName, String lastName, String login, String bankTemporaryPassword, String documentPassword) {
@@ -67,8 +74,12 @@ public class OpenPdfAdapter implements PdfGeneratorPort {
             );
             document.add(warning);
         } catch (Exception e) {
-            //TODO zamiast wyrzucania tego wyjątku implementacja naszego zbieracza błędów z bank common
-            throw new RuntimeException("Błąd podczas składania pliku PDF", e);
+            String msg = "KATASTROFALNY BŁĄD (PDF Generation): Nie udało się złożyć pliku PDF dla loginu " + login + ". " +
+                    "Błąd podczas składania pliku PDF proces upadł";
+
+            errorReporter.report(new RuntimeException(msg, e));
+
+            throw new RuntimeException("Błąd podczas składania pliku PDF proces upadł", e);
         } finally {
             document.close();
         }

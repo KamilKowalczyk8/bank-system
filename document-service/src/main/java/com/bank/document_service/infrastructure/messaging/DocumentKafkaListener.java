@@ -18,17 +18,17 @@ public class DocumentKafkaListener {
         this.generateOnboardingDocumentsUseCase = generateOnboardingDocumentsUseCase;
     }
 
-    @KafkaListener(topics = "customer-registered-topic", groupId = "document-service-group")
+    @KafkaListener(topics = "customer-registration-events", groupId = "document-service-group")
     public void consumeCustomerRegisteredEvent(CustomerRegisteredEventDto eventDto) {
         log.info("Otrzymano zdarzenie z Onboarding Service dla klienta: {}", eventDto.login());
 
         try {
             generateOnboardingDocumentsUseCase.execute(
-                    eventDto.userId(),
+                    java.util.UUID.fromString(eventDto.authId()),
                     eventDto.firstName(),
                     eventDto.lastName(),
                     eventDto.login(),
-                    eventDto.customerEmail(),
+                    eventDto.email(),
                     eventDto.phoneNumber(),
                     eventDto.bankTemporaryPassword()
             );

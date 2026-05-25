@@ -86,6 +86,7 @@ public class AuthService {
 
         return new RegisterResponse(
                 login,
+                tempPassword,
                 "Konto utworzone. Hasło zostało wysłane drogą mailową"
         );
     }

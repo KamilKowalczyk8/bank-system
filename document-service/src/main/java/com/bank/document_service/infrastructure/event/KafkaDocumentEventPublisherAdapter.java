@@ -3,6 +3,7 @@ package com.bank.document_service.infrastructure.event;
 import com.bank.document_service.application.port.DocumentEventPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -10,14 +11,32 @@ public class KafkaDocumentEventPublisherAdapter implements DocumentEventPublishe
 
     private static final Logger log = LoggerFactory.getLogger(KafkaDocumentEventPublisherAdapter.class);
 
+    private static final String TOPIC = "document-ready-events";
+
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
+    public KafkaDocumentEventPublisherAdapter(KafkaTemplate<String, Object> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
+
     @Override
     public void publishDocumentsReadyEvent(String customerEmail, String phoneNumber, String contractPath, String documentPassword) {
-    //TODO tymczasowe rozwiązanie w postacji logów w przyszłosci będzie to rozwinięte od dalszego etapu juz  prawdziwego wysłamnia
+        log.info("Wysyłam zdarzenie na Kafkę dla klienta: {}", customerEmail);
 
-        log.info("Publikacja zdarzenia o gotowych dokumentach!");
-        log.info("Email klienta: {}", customerEmail);
-        log.info("Numer telefonu: {}", phoneNumber);
-        log.info("Ścieżka do załącznika: {}", contractPath);
-        log.info("Hasło do otwarcia PDF: {}", documentPassword);
+        DocumentReadyEvent payload = new DocumentReadyEvent(
+                customerEmail,
+                phoneNumber,
+                contractPath,
+                documentPassword
+        );
+
+        kafkaTemplate.send(TOPIC, customerEmail, payload);
     }
+
+    private record DocumentReadyEvent(
+            String customerEmail,
+            String phoneNumber,
+            String contractPath,
+            String documentPassword
+    ) {}
 }

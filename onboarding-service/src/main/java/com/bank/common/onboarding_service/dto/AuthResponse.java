@@ -6,5 +6,7 @@ public record AuthResponse(
         @JsonProperty("login")
         String authId,
 
+        String temporaryPassword,
+
         String message
 ) {}
