@@ -53,10 +53,8 @@ public class GenerateOnboardingDocumentsUseCaseTest {
 
         given(passwordGeneratorPort.generateTemporaryPassword())
                 .willReturn(expectedDocumentPassword);
-
         given(pdfGeneratorPort.generateContract(userId, firstName, lastName, login, bankTempPassword, expectedDocumentPassword))
                 .willReturn(expectedPdfBytes);
-
         given(documentStoragePort.saveDocument("umowa_" + userId + ".pdf", expectedPdfBytes))
                 .willReturn(expectedSavedPath);
 
@@ -69,7 +67,6 @@ public class GenerateOnboardingDocumentsUseCaseTest {
                 expectedSavedPath,
                 expectedDocumentPassword
         );
-
         verify(pdfGeneratorPort).generateContract(
                 eq(userId),
                 eq(firstName),

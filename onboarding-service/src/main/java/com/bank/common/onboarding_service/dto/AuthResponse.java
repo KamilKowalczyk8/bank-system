@@ -3,10 +3,8 @@ package com.bank.common.onboarding_service.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record AuthResponse(
-        @JsonProperty("login")
-        String authId,
-
+        String userId,
+        String login,
         String temporaryPassword,
-
         String message
 ) {}

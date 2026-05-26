@@ -40,7 +40,7 @@ public class OnboardingService {
             throw new IllegalStateException("Inicjalizacja onboardingu nie powiodła sie na etpaie autoryzacji: " + e.getMessage());
         }
 
-        String generatedAuthId = authResponse.authId();
+        String generatedAuthId = authResponse.userId();
         log.info("Sukces! Z auth-service otrzymano authId: {}", generatedAuthId);
 
         CustomerProfileRequest customerProfileRequest = new CustomerProfileRequest(
@@ -84,11 +84,9 @@ public class OnboardingService {
                     request.phoneNumber(),
                     request.firstName(),
                     request.lastName(),
-                    authResponse.authId(),  //login z auth
+                    authResponse.login(),
                     authResponse.temporaryPassword()
             );
-
-            //TODO : Wysyłanie loginu oraz hasła tymczasowego do document-service
 
             onboardingEventProducer.sendCustomerRegisteredEvent(event);
             log.info("Wysłano powiadomienie na Kafkę o nowym kliencie.");

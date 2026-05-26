@@ -76,7 +76,7 @@ public class AuthService {
                 .role(UserRole.USER)
                 .build();
 
-        userRepository.save(bankUser);
+        User savedUser = userRepository.save(bankUser);
 
         log.info("=== NOWE KONTO BANKOWE (SYMULACJA WIADOMOŚCI NA MAILA) ===");
         log.info("Wiadomość wysłana na numer: {}", request.phoneNumber());
@@ -85,6 +85,7 @@ public class AuthService {
         log.info("==========================================");
 
         return new RegisterResponse(
+                savedUser.getId().toString(),
                 login,
                 tempPassword,
                 "Konto utworzone. Hasło zostało wysłane drogą mailową"

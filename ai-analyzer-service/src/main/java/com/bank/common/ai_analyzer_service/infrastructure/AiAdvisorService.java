@@ -1,6 +1,6 @@
 package com.bank.common.ai_analyzer_service.infrastructure;
 
-import com.bank.common.ai_analyzer_service.dto.ErrorLogEvent;
+import com.bank.common.dto.ErrorLogEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class AiAdvisorService {
                 "Error Message: %s\n" +
                 "Stack Trace: %s\n\n" +
                 "Provide a short, precise explanation of the root cause and a concrete solution. Keep it highly technical and concise.",
-                event.serviceName(), event.timestamp(), event.errorMessage(), event.stackTrace()
+                event.serviceName(), event.timestamp(), event.message(), event.stackTrace()
         );
 
         return chatClient.prompt()

@@ -8,7 +8,7 @@ spring:
       group-id: ai-analyzer-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
         spring.json.value.default.type: com.bank.common.dto.ErrorLogEvent
@@ -19,8 +19,17 @@ spring:
       port: 6379
 
   ai:
-    ollama:
-      base-url: http://host.docker.internal:11434
+    openai:
+      api-key: ${GEMINI_API_KEY}
+      base-url: https://generativelanguage.googleapis.com
       chat:
+        completions-path: /v1beta/openai/chat/completions
         options:
-          model: phi3:mini
+          model: gemini-1.5-flash
+          temperature: 0.2
+
+integrations:
+  slack:
+    webhook-url: ${SLACK_WEBHOOK_URL}
+  discord:
+    webhook-url: ${DISCORD_WEBHOOK_URL}
