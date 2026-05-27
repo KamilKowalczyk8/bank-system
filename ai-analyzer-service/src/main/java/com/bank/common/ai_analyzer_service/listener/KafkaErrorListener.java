@@ -1,10 +1,11 @@
 package com.bank.common.ai_analyzer_service.listener;
 
-import com.bank.common.ai_analyzer_service.application.port.NotificationPort;
+import com.bank.common.ai_analyzer_service.dto.SendNotificationEvent;
 import com.bank.common.dto.ErrorLogEvent;
 import com.bank.common.ai_analyzer_service.infrastructure.AiAdvisorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import com.bank.common.api.ErrorReporter;
 
@@ -16,12 +17,16 @@ public class KafkaErrorListener {
 
     private final AiAdvisorService aiAdvisorService;
     private final ErrorReporter errorReporter;
-    private final List<NotificationPort> notificationChannels;
 
-    public KafkaErrorListener(AiAdvisorService aiAdvisorService, ErrorReporter errorReporter, List<NotificationPort> notificationChannels) {
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
+    public KafkaErrorListener(AiAdvisorService aiAdvisorService,
+                              ErrorReporter errorReporter,
+                              KafkaTemplate<String, Object> kafkaTemplate
+    ) {
         this.aiAdvisorService = aiAdvisorService;
         this.errorReporter = errorReporter;
-        this.notificationChannels = notificationChannels;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @KafkaListener(topics = "error-logs-topic", groupId = "ai-analyzer-group")
@@ -45,14 +50,19 @@ public class KafkaErrorListener {
                     event.serviceName(), event.message(), aiAdvice
             );
 
-            notificationChannels.forEach(channel -> channel.sendNotification(alertMessage));
+            SendNotificationEvent notification = new SendNotificationEvent(
+                    "ALERT SYSTEMOWY MIKROSERWISÓW",
+                    alertMessage,
+                    List.of("SLACK", "DISCORD")
+            );
+
+            log.info("📤 Publikuję SendNotificationEvent na Kafkę dla notification-service...");
+            kafkaTemplate.send("system-notifications-topic", notification);
 
         } catch (Exception e) {
             String msg = "Awaria modułu AI podczas analizy błędu z serwisu: " + event.serviceName();
             log.error(msg, e);
             errorReporter.report(new RuntimeException(msg, e));
         }
-
     }
-
 }

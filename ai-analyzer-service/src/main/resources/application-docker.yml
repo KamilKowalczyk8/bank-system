@@ -28,8 +28,3 @@ spring:
           model: gemini-1.5-flash
           temperature: 0.2
 
-integrations:
-  slack:
-    webhook-url: ${SLACK_WEBHOOK_URL}
-  discord:
-    webhook-url: ${DISCORD_WEBHOOK_URL}

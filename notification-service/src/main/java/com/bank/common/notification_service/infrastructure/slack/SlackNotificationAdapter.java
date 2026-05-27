@@ -1,9 +1,8 @@
-package com.bank.common.ai_analyzer_service.infrastructure.slack;
+package com.bank.common.notification_service.infrastructure.slack;
 
-import com.bank.common.ai_analyzer_service.application.port.NotificationPort;
+import com.bank.common.notification_service.port.NotificationPort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.web.client.RestClientSsl;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import java.util.Map;
@@ -38,5 +37,10 @@ public class SlackNotificationAdapter implements NotificationPort {
         } catch (Exception e) {
             log.error("Błąd podczas wysyłania na Slacka: {}", e.getMessage());
         }
+    }
+
+    @Override
+    public String getChannelType() {
+        return "SLACK";
     }
 }

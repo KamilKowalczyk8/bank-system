@@ -1,6 +1,6 @@
-package com.bank.common.ai_analyzer_service.infrastructure.discord;
+package com.bank.common.notification_service.infrastructure.discord;
 
-import com.bank.common.ai_analyzer_service.application.port.NotificationPort;
+import com.bank.common.notification_service.port.NotificationPort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -38,5 +38,10 @@ public class DiscordNotificationAdapter implements NotificationPort {
         } catch (Exception e) {
             log.error("Błąd podczas wysyłania na Discorda: {}", e.getMessage());
         }
+    }
+
+    @Override
+    public String getChannelType() {
+        return "DISCORD";
     }
 }

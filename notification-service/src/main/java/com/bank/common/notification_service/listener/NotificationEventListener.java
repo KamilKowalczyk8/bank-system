@@ -4,12 +4,16 @@ import com.bank.common.api.ErrorReporter;
 import com.bank.common.notification_service.event.CardCreatedEvent;
 import com.bank.common.notification_service.event.CustomerRegisteredEvent;
 import com.bank.common.notification_service.event.PaymentFailedEvent;
+import com.bank.common.notification_service.event.SendNotificationEvent;
+import com.bank.common.notification_service.port.NotificationPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -19,6 +23,27 @@ public class NotificationEventListener {
 
     private final JavaMailSender mailSender;
     private final ErrorReporter errorReporter;
+
+    private final List<NotificationPort> notificationChannels;
+
+    @KafkaListener(topics = "system-notifications-topic", groupId = "notification-group")
+    public void handleSystemNotification(SendNotificationEvent event) {
+        log.info("KAFKA = Otrzymano żądanie wysyłki powiadomienia systemowego od AI: {}", event.title());
+
+        try {
+            String fullMessage = event.title() + "\n\n" + event.content();
+
+            for (NotificationPort channel : notificationChannels) {
+                if (event.channels().contains(channel.getChannelType())) {
+                    channel.sendNotification(fullMessage);
+                }
+            }
+        } catch (Exception e) {
+            String msg = "Awaria podczas routowania powiadomienia systemowego AI: " + event.title();
+            log.error(msg, e);
+            errorReporter.report(new RuntimeException(msg, e));
+        }
+    }
 
     @KafkaListener(topics = "customer-registration-events", groupId = "notification-group")
     public void handleCustomerRegistration(CustomerRegisteredEvent event) {

@@ -11,3 +11,9 @@ spring:
           auth: false
           starttls:
             enable: false
+
+integrations:
+  slack:
+    webhook-url: ${SLACK_WEBHOOK_URL}
+  discord:
+    webhook-url: ${DISCORD_WEBHOOK_URL}

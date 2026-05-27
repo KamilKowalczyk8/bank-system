@@ -3,6 +3,7 @@ package com.bank.common.ai_analyzer_service.infrastructure;
 import com.bank.common.dto.ErrorLogEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -11,27 +12,35 @@ public class AiAdvisorService {
 
     private final ChatClient chatClient;
 
-    public AiAdvisorService(ChatClient.Builder chatClientBuilder) {
-        this.chatClient = chatClientBuilder.build();
+    public AiAdvisorService(ChatClient.Builder chatClientBuilder, ChatModel chatModel) {
+        this.chatClient = chatClientBuilder
+                .defaultSystem("Jesteś ekspertem w dziedzinie inżynierii oprogramowania Java i Spring Boot.")
+                .build();
     }
 
     public String analyzeError(ErrorLogEvent event) {
-        log.info("Wysyłam do lokalnego AI błąd z serwisu: {}", event.serviceName());
+        log.info("Wysyłam zapytanie do Gemini API o analizę błędu z serwisu: {}", event.serviceName());
 
         String prompt = String.format(
-                "You are an expert Java and Spring Boot software engineer. Analyze the following application error.\n" +
-                "Microservice: %s\n" +
-                "Time: %s\n" +
-                "Error Message: %s\n" +
-                "Stack Trace: %s\n\n" +
-                "Provide a short, precise explanation of the root cause and a concrete solution. Keep it highly technical and concise.",
+                "Jesteś ekspertem w dziedzinie inżynierii oprogramowania Java i Spring Boot. Przeanalizuj poniższy błąd aplikacji.\n" +
+                        "Mikroserwis: %s\n" +
+                        "Czas: %s\n" +
+                        "Komunikat błędu: %s\n" +
+                        "Stack Trace: %s\n\n" +
+                        "Podaj krótkie, precyzyjne wyjaśnienie głównej przyczyny (root cause) oraz konkretne rozwiązanie (kod lub kroki naprawcze). " +
+                        "Odpowiedź musi być wysoce techniczna, zwięzła i sformatowana w języku polskim z użyciem czytelnych punktów (Markdown).",
                 event.serviceName(), event.timestamp(), event.message(), event.stackTrace()
         );
 
-        return chatClient.prompt()
-                .user(prompt)
-                .call()
-                .content();
+        try {
+            return chatClient.prompt()
+                    .user(prompt)
+                    .call()
+                    .content();
+        } catch (Exception e) {
+            log.error("Bezpośredni błąd podczas komunikacji z API Gemini: {}", e.getMessage());
+            throw e;
+        }
 
     }
 }
