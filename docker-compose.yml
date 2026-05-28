@@ -227,6 +227,15 @@ services:
         environment:
             - SPRING_PROFILES_ACTIVE=docker
 
+    document-service:
+        build:
+            context: ./document-service
+        container_name: document-service
+        ports:
+            - "8093:8093"
+        environment:
+            - SPRING_PROFILES_ACTIVE=docker
+
     card-service:
         build: ./card-service
         container_name: card-service

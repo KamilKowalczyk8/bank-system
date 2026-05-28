@@ -10,7 +10,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 @Configuration
 public class ErrorConfig {
 
-    @Value("${spring.application.name:api-gateway}")
+    @Value("${spring.application.yml.name:api-gateway}")
     private String serviceName;
 
     @Bean

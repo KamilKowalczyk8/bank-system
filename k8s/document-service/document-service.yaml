@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: document-service-deployment }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: document-service } }
+  template:
+    metadata: { labels: { app: document-service } }
+    spec:
+      containers:
+        - name: document-service
+          image: kamilkowalczyk8/document-service:8247e51796e60c841a8eb7a91236a8a2bde538d9
+          imagePullPolicy: Always
+          ports: [ { containerPort: 8093 } ]
+          env:
+            - { name: SPRING_PROFILES_ACTIVE, value: "docker" }
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: kafka:29092
+---
+apiVersion: v1
+kind: Service
+metadata: { name: document-service }
+spec:
+  selector: { app: document-service }
+  ports: [ { protocol: TCP, port: 8086, targetPort: 8093 } ]

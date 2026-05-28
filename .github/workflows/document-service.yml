@@ -1,0 +1,20 @@
+name: Document Service CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'document-service/**'
+      - 'bank-common/**'
+      - '.github/workflows/**'
+
+permissions:
+  contents: write
+
+jobs:
+  call-template:
+    uses: ./.github/workflows/template-microservice-ci.yml
+    with:
+      service_name: 'document-service'
+      service_location: 'customer'
+    secrets: inherit
