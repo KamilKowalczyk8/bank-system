@@ -70,45 +70,37 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       # Krok 7: Budowanie obrazu i push na Docker Hub
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./${{ inputs.service_name }}
-          file: ./${{ inputs.service_name }}/Dockerfile
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/bank-${{ inputs.service_name }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/bank-${{ inputs.service_name }}:${{ github.sha }}
-
-      # Krok 8: Aktualizacja manifestu dla ArgoCD (GitOps)
       - name: Update K8s manifest
         env:
-          service: ${{ inputs.service_name }}
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          location: ${{ inputs.service_location }}
-          sha: ${{ github.sha }}
+          SERVICE: ${{ inputs.service_name }}
+          USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          LOCATION: ${{ inputs.service_location }}
+          SHA: ${{ github.sha }}
+
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "GitHub Actions Bot"
-          
-          cd ./k8s/$location
-          
-          sed -i "s|image: $username/bank-$service:.*|image: $username/bank-$service:$sha|g" $service.yaml
-          
-          git add $service.yaml
-          git commit -m "Auto-update $service image tag to $sha [skip ci]" || echo "No changes to commit"
-          
+
+          cd ./k8s/${LOCATION}
+
+          FILE="${SERVICE}.yaml"
+
+          sed -i "s|image: ${USERNAME}/bank-${SERVICE}:.*|image: ${USERNAME}/bank-${SERVICE}:${SHA}|g" $FILE
+
+          git add $FILE
+          git commit -m "update ${SERVICE} image to ${SHA} [skip ci]" || echo "no changes"
+
           for i in 1 2 3 4 5; do
             git pull --rebase --autostash origin main
-          
+
             if git push; then
-              echo "Sukces! Zmiany wypchnięte."
+              echo "SUCCESS"
               exit 0
             fi
-          
-            echo "Kolizja z innym mikroserwisem! Próba $i z 5... Czekam na odblokowanie GitHuba."
+
+            echo "Retry $i/5"
             sleep $((1 + RANDOM % 5))
           done
-          
-          echo "Błąd krytyczny: Nie udało się wypchnąć zmian po 5 próbach."
+
+          echo "FAILED"
           exit 1
