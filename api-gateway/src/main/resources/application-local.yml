@@ -19,3 +19,5 @@ services:
     url: http://localhost:8088
   fraud:
     url: http://localhost:8089
+  document:
+    url: http://localhost:8093

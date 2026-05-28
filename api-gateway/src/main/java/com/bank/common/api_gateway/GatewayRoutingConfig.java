@@ -34,6 +34,9 @@ public class GatewayRoutingConfig {
     @Value("${services.fraud.url}")
     private String fraudServiceUrl;
 
+    @Value("${services.document.url}")
+    private String documentServiceUrl;
+
     @Bean
     public RouteLocator gatewayRoutes(
             RouteLocatorBuilder builder,
@@ -106,6 +109,15 @@ public class GatewayRoutingConfig {
                                 .filter(jwtAuthenticationFilter)
                         )
                         .uri(paymentServiceUrl)
+                )
+
+                .route("document-service-route", r -> r
+                        .path("/api/documents/**")
+                        .filters(f -> f
+                                .filter(rateLimitingFilter)
+                                .filter(jwtAuthenticationFilter)
+                        )
+                        .uri(documentServiceUrl)
                 )
 
                 .build();

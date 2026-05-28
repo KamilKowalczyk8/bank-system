@@ -19,3 +19,5 @@ services:
     url: http://payment-service:8088
   fraud:
     url: http://fraud-service:8089
+  document:
+    url: http://document-service:8093
