@@ -5,10 +5,6 @@ spring:
   application:
     name: document-service
 
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
-
   kafka:
     bootstrap-servers: localhost:9093
 

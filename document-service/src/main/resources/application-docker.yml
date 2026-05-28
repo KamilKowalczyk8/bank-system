@@ -12,7 +12,3 @@ spring:
       properties:
         spring.json.trusted.packages: "com.bank.common.dto"
 
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
-
