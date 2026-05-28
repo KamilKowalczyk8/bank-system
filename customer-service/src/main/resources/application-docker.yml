@@ -4,3 +4,10 @@ spring:
     username: custouser
     password: custopass
     driver-class-name: org.postgresql.Driver
+
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

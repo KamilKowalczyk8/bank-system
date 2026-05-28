@@ -2,6 +2,12 @@ spring:
   kafka:
     bootstrap-servers: kafka:9092
 
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
 services:
   auth:
     url: http://auth-service:8081

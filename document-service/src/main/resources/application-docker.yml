@@ -12,3 +12,8 @@ spring:
       properties:
         spring.json.trusted.packages: "com.bank.common.dto"
 
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

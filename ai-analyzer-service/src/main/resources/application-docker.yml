@@ -13,6 +13,12 @@ spring:
         spring.json.trusted.packages: "*"
         spring.json.value.default.type: com.bank.common.dto.ErrorLogEvent
 
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
   data:
     redis:
       host: api-redis

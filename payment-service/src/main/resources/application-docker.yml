@@ -15,6 +15,12 @@ spring:
   kafka:
     bootstrap-servers: kafka:29092
 
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
 services:
   account:
     url: http://account-service:8084

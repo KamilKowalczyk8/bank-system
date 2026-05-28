@@ -12,6 +12,13 @@ spring:
           starttls:
             enable: false
 
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+
 integrations:
   slack:
     webhook-url: ${SLACK_WEBHOOK_URL}
