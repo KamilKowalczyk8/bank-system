@@ -22,4 +22,4 @@ kind: Service
 metadata: { name: document-service }
 spec:
   selector: { app: document-service }
-  ports: [ { protocol: TCP, port: 8086, targetPort: 8093 } ]
+  ports: [ { protocol: TCP, port: 8093, targetPort: 8093 } ]
