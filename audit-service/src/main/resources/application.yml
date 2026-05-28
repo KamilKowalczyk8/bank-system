@@ -10,3 +10,5 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       properties:
         spring.json.trusted.packages: "com.bank.common.dto"
+
+  # wymuszenie startu
