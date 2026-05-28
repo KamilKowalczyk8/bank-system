@@ -1,3 +1,7 @@
 spring:
   kafka:
     bootstrap-servers: bank-kafka:29092
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
