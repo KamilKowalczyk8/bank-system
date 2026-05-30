@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: fraud-service
-          image: kamilkowalczyk8/bank-fraud-service:d0e5c3622e910d5680f31f48baa9cdbbc3b9a324
+          image: kamilkowalczyk8/bank-fraud-service:5878c4c39b813994dbad020e13beb3474d196fbf
           imagePullPolicy: Always
           ports: [ { containerPort: 8089 } ]
           env:
