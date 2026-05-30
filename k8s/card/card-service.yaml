@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: card-service
-          image: kamilkowalczyk8/bank-card-service:8247e51796e60c841a8eb7a91236a8a2bde538d9
+          image: kamilkowalczyk8/bank-card-service:f0abab8ecb584d776d9d3fafac6a3a684a7dabc2
           imagePullPolicy: Always
           ports: [ { containerPort: 8087 } ]
           env:
