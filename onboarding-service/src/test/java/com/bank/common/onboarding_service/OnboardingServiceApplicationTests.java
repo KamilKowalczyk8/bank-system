@@ -7,7 +7,12 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(classes = OnboardingServiceApplication.class)
+@SpringBootTest(
+		classes = OnboardingServiceApplication.class,
+		properties = {
+				"spring.mvc.pathmatch.matching-strategy=ant_path_matcher"
+		}
+)
 @EnableAutoConfiguration(exclude = {
 		DataSourceAutoConfiguration.class,
 		DataSourceTransactionManagerAutoConfiguration.class,
