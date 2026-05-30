@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: kamilkowalczyk8/bank-api-gateway:49056a7288ef41a24968e5be3ca7cf8412c1b833
+          image: kamilkowalczyk8/bank-api-gateway:5878c4c39b813994dbad020e13beb3474d196fbf
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
