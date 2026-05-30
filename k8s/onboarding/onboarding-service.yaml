@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: onboarding-service
-          image: kamilkowalczyk8/bank-onboarding-service:ef3728f4cd0426f289f52a377560f90fc41b51be
+          image: kamilkowalczyk8/bank-onboarding-service:924a9ae8bfdc4e9a3171a876ffd521642d5c123d
           imagePullPolicy: Always
           ports: [ { containerPort: 8083 } ]
           env:
