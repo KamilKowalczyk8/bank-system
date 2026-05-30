@@ -1,6 +1,5 @@
-package com.bank.onboarding_service;
+package com.bank.common.onboarding_service;
 
-import com.bank.common.onboarding_service.OnboardingServiceApplication;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;

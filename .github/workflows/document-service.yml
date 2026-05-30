@@ -16,5 +16,5 @@ jobs:
     uses: ./.github/workflows/template-microservice-ci.yml
     with:
       service_name: 'document-service'
-      service_location: 'customer'
+      service_location: 'document'
     secrets: inherit
