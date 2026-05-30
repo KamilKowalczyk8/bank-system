@@ -10,12 +10,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-@SpringBootTest(
-		classes = OnboardingServiceApplication.class,
-		properties = {
-				"spring.mvc.pathmatch.matching-strategy=ant_path_matcher"
-		}
-)
+@SpringBootTest(classes = OnboardingServiceApplication.class)
 @EnableAutoConfiguration(exclude = {
 		DataSourceAutoConfiguration.class,
 		DataSourceTransactionManagerAutoConfiguration.class,
