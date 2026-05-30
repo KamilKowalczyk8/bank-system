@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(classes = DocumentServiceApplicationTests.class)
+@SpringBootTest(classes = DocumentServiceApplication.class)
 @EnableAutoConfiguration(exclude = {
 		DataSourceAutoConfiguration.class,
 		DataSourceTransactionManagerAutoConfiguration.class,

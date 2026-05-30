@@ -7,7 +7,12 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(classes = AiAnalyzerServiceApplicationTests.class)
+@SpringBootTest(
+		classes = AiAnalyzerServiceApplication.class,
+		properties = {
+				"spring.ai.openai.api-key=mock-key-for-ci-pipeline"
+		}
+)
 @EnableAutoConfiguration(exclude = {
 		DataSourceAutoConfiguration.class,
 		DataSourceTransactionManagerAutoConfiguration.class,
