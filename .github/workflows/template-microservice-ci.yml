@@ -61,11 +61,19 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=KamilKowalczyk8_bank-system -Dsonar.organization=kamilkowalczyk8 -Dsonar.host.url=https://sonarcloud.io      # Krok 6: Logowanie do Dockera
+
+      #Krok 6: Logowanie do dockera i pushowanie oraz budowa obrazu
       - name: Login to Docker
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        working-directory: ./${{ inputs.service_name }}
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/bank-${{ inputs.service_name }}:${{ github.sha }} .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/bank-${{ inputs.service_name }}:${{ github.sha }}
 
       # Krok 7: Budowanie obrazu i push na Docker Hub
       - name: Update K8s manifest
