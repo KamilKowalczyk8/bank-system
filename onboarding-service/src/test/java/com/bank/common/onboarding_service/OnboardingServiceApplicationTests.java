@@ -10,7 +10,13 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-@SpringBootTest(classes = OnboardingServiceApplication.class)
+@SpringBootTest(
+		classes = OnboardingServiceApplication.class,
+		properties = {
+				"springdoc.api-docs.enabled=false",
+				"springdoc.swagger-ui.enabled=false"
+		}
+)
 @EnableAutoConfiguration(exclude = {
 		DataSourceAutoConfiguration.class,
 		DataSourceTransactionManagerAutoConfiguration.class,
@@ -18,9 +24,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 		KafkaAutoConfiguration.class
 })
 class OnboardingServiceApplicationTests {
-
-	@MockitoBean
-	private SpringDocConfiguration springDocConfiguration;
 
 	@Test
 	void contextLoads() {
