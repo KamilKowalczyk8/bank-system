@@ -13,7 +13,8 @@ spec:
           imagePullPolicy: Always
           ports: [ { containerPort: 8086 } ]
           env:
-            - { name: SPRING_PROFILES_ACTIVE, value: "docker" }
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
               value: kafka:29092
             - name: GEMINI_API_KEY

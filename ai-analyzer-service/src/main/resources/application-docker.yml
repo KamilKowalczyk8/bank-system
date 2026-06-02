@@ -13,6 +13,16 @@ spring:
         spring.json.trusted.packages: "*"
         spring.json.value.default.type: com.bank.common.dto.ErrorLogEvent
 
+  ai:
+    openai:
+      api-key: ${GEMINI_API_KEY}
+      base-url: https://generativelanguage.googleapis.com
+      chat:
+        completions-path: /v1beta/openai/chat/completions
+        options:
+          model: gemini-1.5-flash
+          temperature: 0.2
+
 springdoc:
   api-docs:
     enabled: false
@@ -24,13 +34,5 @@ springdoc:
       host: api-redis
       port: 6379
 
-  ai:
-    openai:
-      api-key: ${GEMINI_API_KEY}
-      base-url: https://generativelanguage.googleapis.com
-      chat:
-        completions-path: /v1beta/openai/chat/completions
-        options:
-          model: gemini-1.5-flash
-          temperature: 0.2
+
 

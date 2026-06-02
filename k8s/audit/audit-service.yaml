@@ -19,6 +19,8 @@ spec:
           ports:
             - containerPort: 8080
           env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
             - name: SPRING_DATA_MONGODB_HOST
               value: "audit-mongodb-service"
             - name: SPRING_DATA_MONGODB_PORT
