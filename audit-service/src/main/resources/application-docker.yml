@@ -1,4 +1,6 @@
 spring:
+  main:
+    web-application-type: none
   kafka:
     bootstrap-servers: bank-kafka:29092
   data:
