@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: audit-service
-          image: kamilkowalczyk8/bank-audit-service:7f8bc5b905d9a29f794c5bb16b719b0854d014ec
+          image: kamilkowalczyk8/bank-audit-service:996ab1136973012a67c2805d06a99f6eb6c45a01
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
