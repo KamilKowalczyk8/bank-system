@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: kamilkowalczyk8/bank-notification-service:0ab6b2f28557c30de7fd558158321201e2fd76e5
+          image: kamilkowalczyk8/bank-notification-service:302d93202dd3a0f3477c8a0c4671147e719a337e
           imagePullPolicy: Always
           ports: [ { containerPort: 8085 } ]
           env:
