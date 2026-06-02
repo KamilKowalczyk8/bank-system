@@ -3,9 +3,6 @@ spring:
     web-application-type: none
   kafka:
     bootstrap-servers: bank-kafka:29092
-  data:
-    mongodb:
-      uri: mongodb://${DB_USER}:${DB_PASSWORD}@audit-mongodb-service:27017/bank_audit_db?authSource=admin
 
   ai:
     openai:
