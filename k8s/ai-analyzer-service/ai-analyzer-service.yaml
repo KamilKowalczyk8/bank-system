@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: ai-analyzer-service
-          image: kamilkowalczyk8/bank-ai-analyzer-service:924a9ae8bfdc4e9a3171a876ffd521642d5c123d
+          image: kamilkowalczyk8/bank-ai-analyzer-service:f67f314f37420b15894efd36a59709e589fdca7c
           imagePullPolicy: Always
           ports: [ { containerPort: 8086 } ]
           env:
