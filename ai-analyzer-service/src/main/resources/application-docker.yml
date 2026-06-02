@@ -23,16 +23,18 @@ spring:
           model: gemini-1.5-flash
           temperature: 0.2
 
+  data:
+    redis:
+      host: api-redis
+      port: 6379
+
 springdoc:
   api-docs:
     enabled: false
   swagger-ui:
     enabled: false
 
-  data:
-    redis:
-      host: api-redis
-      port: 6379
+
 
 
 
