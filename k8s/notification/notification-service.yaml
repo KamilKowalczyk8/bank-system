@@ -13,10 +13,25 @@ spec:
           imagePullPolicy: Always
           ports: [ { containerPort: 8085 } ]
           env:
-            - { name: SPRING_PROFILES_ACTIVE, value: "docker" }
-            - { name: SPRING_KAFKA_BOOTSTRAP_SERVERS, value: "kafka:29092" }
-            - { name: SPRING_MAIL_HOST, value: "mailhog" }
-            - { name: SPRING_MAIL_PORT, value: "1025" }
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: kafka:29092
+            - name: SPRING_MAIL_HOST
+              value: mailhog
+            - name: SPRING_MAIL_PORT
+              value: 1025
+            - name: DISCORD_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: notification-secret
+                  key: discord-url
+            - name: SLACK_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: notification-secret
+                  key: slack-url
+
 ---
 apiVersion: v1
 kind: Service
