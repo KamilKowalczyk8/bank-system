@@ -3,6 +3,12 @@ spring:
     web-application-type: none
   kafka:
     bootstrap-servers: bank-kafka:29092
+    consumer:
+      group-id: audit-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.bank.common.dto"
 
   ai:
     openai:
