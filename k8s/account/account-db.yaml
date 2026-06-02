@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: account-db-deployment
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: account-db
