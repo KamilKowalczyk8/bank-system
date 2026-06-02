@@ -7,6 +7,16 @@ spring:
     mongodb:
       uri: mongodb://bank-mongodb:27017/bank_audit_db
 
+  ai:
+    openai:
+      api-key: ${GEMINI_API_KEY}
+      base-url: https://generativelanguage.googleapis.com
+      chat:
+        completions-path: /v1beta/openai/chat/completions
+        options:
+          model: gemini-1.5-flash
+          temperature: 0.2
+
 springdoc:
   api-docs:
     enabled: false
