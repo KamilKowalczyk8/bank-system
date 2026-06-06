@@ -16,7 +16,7 @@ spec:
         - name: regcred
       containers:
         - name: auth-service
-          image: kamilkowalczyk8/bank-auth-service:a363b9732856342ceccba2f8f82f343b6ca2a9a3
+          image: kamilkowalczyk8/bank-auth-service:a3d6692d23da3484cc404db9cd2cdd93b9db1445
           imagePullPolicy: Always #Mówi K8s, żeby szukał w internecie github
           ports:
             - containerPort: 8081
