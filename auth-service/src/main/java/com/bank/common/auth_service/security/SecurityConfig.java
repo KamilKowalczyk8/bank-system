@@ -58,10 +58,11 @@ public class SecurityConfig {
                                     "/auth/login/step3",
                                     "/auth/register"
                             ).permitAll()
-                            .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/auth/**").permitAll()
+                            .requestMatchers("/internal/**").hasRole("INTERNAL_SERVICE")
 
                             .requestMatchers("/auth/first-password-setup")
                             .hasAuthority("ROLE_PRE_AUTH_PASSWORD_CHANGE")
+
                             .anyRequest().authenticated()
                     );
 

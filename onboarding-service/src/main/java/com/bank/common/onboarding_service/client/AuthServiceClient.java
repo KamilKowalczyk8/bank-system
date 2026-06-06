@@ -8,12 +8,12 @@ import org.springframework.web.service.annotation.DeleteExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 
-@HttpExchange("/auth")
+@HttpExchange
 public interface AuthServiceClient {
 
-    @PostExchange("/register")
+    @PostExchange("/auth/register")
     AuthResponse registerAccount(@RequestBody AuthRegistrationRequest request);
 
-    @DeleteExchange("/{authId}")
+    @DeleteExchange("/internal/auth/{authId}")
     void deleteAccount(@PathVariable("authId") String authId);
 }

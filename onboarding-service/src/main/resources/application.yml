@@ -19,3 +19,6 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       properties:
         spring.json.add.type.headers: false
+
+jwt:
+  secret: U3VwZXJUYWpueUtsdWN6QmFua293eURvR2VuZXJvd2FuaWFUb2tlbm93MjAyNiE=
