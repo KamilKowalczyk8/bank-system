@@ -5,6 +5,7 @@ import com.bank.common.onboarding_service.client.AuthServiceClient;
 import com.bank.common.onboarding_service.client.CustomerServiceClient;
 import com.bank.common.onboarding_service.security.InternalJwtProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class HttpClientConfig {
 
     private final InternalJwtProvider internalJwtProvider;
@@ -37,9 +39,13 @@ public class HttpClientConfig {
         RestClient restClient = RestClient.builder()
                 .baseUrl(baseUrl)
                 .requestInterceptor(((request, body, execution) ->  {
+                    log.info("------- WYCHODZĄCE ŻĄDANIE: scieżka: {}", request.getURI().getPath());
                     if (request.getURI().getPath().startsWith("/internal")) {
                         String internalToken = internalJwtProvider.generateInternalToken();
+                        log.info("INTERCEPTOR: Wygenerowano wewnętrzny token dla: {}", request.getURI().getPath());
                         request.getHeaders().setBearerAuth(internalToken);
+                    } else {
+                        log.info("INTERCEPTOR: Ignoruję, to zwykłe żądanie.");
                     }
                     return execution.execute(request, body);
                 }))

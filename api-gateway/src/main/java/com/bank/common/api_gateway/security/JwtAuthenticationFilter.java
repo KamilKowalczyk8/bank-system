@@ -62,7 +62,7 @@ public class JwtAuthenticationFilter implements GatewayFilter, Ordered {
             return chain.filter(mutatedExchange);
 
         } catch (Exception e) {
-            String msg = "JWT invalid for path: " + path + " reason: " + e.getMessage();
+            String msg = "JWT nieprawidłowe dla ścieżki: " + path + " powód: " + e.getMessage();
 
             log.warn(msg);
             errorReporter.report(new SecurityException(msg));
@@ -76,7 +76,6 @@ public class JwtAuthenticationFilter implements GatewayFilter, Ordered {
                     path
             );
 
-            // reactive write response
             return exchange.getResponse()
                     .writeWith(Mono.just(
                             exchange.getResponse()
