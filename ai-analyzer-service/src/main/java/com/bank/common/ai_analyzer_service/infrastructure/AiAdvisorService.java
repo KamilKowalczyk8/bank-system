@@ -38,8 +38,13 @@ public class AiAdvisorService {
                     .call()
                     .content();
         } catch (Exception e) {
-            log.error("Bezpośredni błąd podczas komunikacji z API Gemini: {}", e.getMessage());
-            throw e;
+            log.warn("AI niedostępne (możliwy limit API). Generuję raport awaryjny.");
+            return  "**UWAGA: Moduł AI jest obecnie niedostępny (limit kwoty API).**\n\n" +
+                    "Oto surowe dane błędu:\n" +
+                    "- **Serwis:** " + event.serviceName() + "\n" +
+                    "- **Komunikat:** " + event.message() + "\n" +
+                    "- **Czas:** " + event.timestamp() + "\n\n" +
+                    "Proszę sprawdź logi w serwisie, aby uzyskać pełny stack trace.";
         }
 
     }

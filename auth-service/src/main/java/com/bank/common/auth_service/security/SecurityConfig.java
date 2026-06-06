@@ -58,6 +58,7 @@ public class SecurityConfig {
                                     "/auth/login/step3",
                                     "/auth/register"
                             ).permitAll()
+                            .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/auth/**").permitAll()
 
                             .requestMatchers("/auth/first-password-setup")
                             .hasAuthority("ROLE_PRE_AUTH_PASSWORD_CHANGE")

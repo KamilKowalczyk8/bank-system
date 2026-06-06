@@ -66,17 +66,25 @@ public class AuditAnalyzerService {
                     .call()
                     .content();
 
-            SendNotificationEvent event = new SendNotificationEvent(
-                    "OKRESOWY RAPORT KONDYCJI SYSTEMU (AI AUDYTOR)",
-                    aiReport,
-                    List.of("SLACK", "DISCORD")
-            );
-
-            log.info("Wysyłam wygenerowany raport okresowy na Kafkę");
-            kafkaTemplate.send("system-notifications-topic", event);
-
+            publishNotification(aiReport);
         } catch (Exception e) {
-            log.error("Błąd Agenta podczas generowania raportu okresowego: {}", e.getMessage());
+            log.error("Błąd AI podczas audytu okresowego, wysyłam raport surowy: {}", e.getMessage());
+            String fallbackReport =
+                    "**RAPORT OKRESOWY (AI NIEDOSTĘPNE)**\n\n" +
+                    "System nie był w stanie wygenerować analizy AI z powodu wyczerpania limitów API. " +
+                    "Znaleziono " + recentErrors.size() + " błędów w ostatnich 2 godzinach. " +
+                    "Proszę zalogować się do MongoDB i sprawdzić kolekcję `error_history`.";
+
+            publishNotification(fallbackReport);
         }
+    }
+
+    private void publishNotification(String report) {
+        SendNotificationEvent event = new SendNotificationEvent(
+                "RAPORT SYSTEMOWY",
+                report,
+                List.of("SLACK", "DISCORD")
+        );
+        kafkaTemplate.send("system-notifications-topic", event);
     }
 }
