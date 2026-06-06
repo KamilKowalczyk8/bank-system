@@ -24,6 +24,7 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -96,7 +97,7 @@ public class AuthService {
     public void deleteAccountHard(String authId) {
         log.warn("Otrzymano żądanie usunięcia konta dla authId: {}", authId);
 
-        var account = userRepository.findByLogin(authId)
+        var account = userRepository.findById(UUID.fromString(authId))
                 .orElseThrow(() -> new IllegalStateException("Nie znaleziono konta do usunięcia dla ID: " + authId));
 
         userRepository.delete(account);
