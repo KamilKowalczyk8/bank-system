@@ -35,6 +35,7 @@ public class GatewayHeaderAuthFilter extends OncePerRequestFilter {
         String role = request.getHeader("X-User-Role");
 
         if (login != null && role != null) {
+            String springRole = role.startsWith("ROLE_") ? role : "ROLE_" + role;
             SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
 
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
@@ -71,7 +72,7 @@ public class GatewayHeaderAuthFilter extends OncePerRequestFilter {
                 String subject = claims.getSubject();
 
                 if (interalRole != null && !interalRole.trim().isEmpty()) {
-                    //String springRole = interalRole.startsWith("ROLE_") ? interalRole : "ROLE_" + interalRole;
+                    String springRole = interalRole.startsWith("ROLE_") ? interalRole : "ROLE_" + interalRole;
                     SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
 
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
