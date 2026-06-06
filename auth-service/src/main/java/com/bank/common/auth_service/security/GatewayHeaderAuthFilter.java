@@ -70,7 +70,8 @@ public class GatewayHeaderAuthFilter extends OncePerRequestFilter {
                 String interalRole = claims.get("role", String.class);
                 String subject = claims.getSubject();
 
-                if (interalRole != null) {
+                if (interalRole != null && !interalRole.trim().isEmpty()) {
+                    //String springRole = interalRole.startsWith("ROLE_") ? interalRole : "ROLE_" + interalRole;
                     SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
 
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
@@ -80,7 +81,11 @@ public class GatewayHeaderAuthFilter extends OncePerRequestFilter {
                     );
                     SecurityContextHolder.getContext().setAuthentication(auth);
                     logger.info("Autoryzacja międzyserwisowa udana dla: " + subject);
+                } else {
+                    logger.warn("Token prawidłowy, ale brakuje wymaganej roli (claim 'role' jest pusty).");
                 }
+            } catch (IllegalArgumentException e) {
+                logger.error("Błąd argumentu podczas tworzenia roli: " + e.getMessage());
             } catch (Exception e) {
                 logger.warn("Odrzucono nieprawidłowy token wewnętrzny: " + e.getMessage());
             }
