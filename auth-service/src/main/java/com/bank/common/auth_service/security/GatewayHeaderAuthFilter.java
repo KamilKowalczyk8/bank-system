@@ -36,7 +36,7 @@ public class GatewayHeaderAuthFilter extends OncePerRequestFilter {
 
         if (login != null && role != null) {
             String springRole = role.startsWith("ROLE_") ? role : "ROLE_" + role;
-            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
+            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(springRole);
 
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                     login,
@@ -73,7 +73,7 @@ public class GatewayHeaderAuthFilter extends OncePerRequestFilter {
 
                 if (interalRole != null && !interalRole.trim().isEmpty()) {
                     String springRole = interalRole.startsWith("ROLE_") ? interalRole : "ROLE_" + interalRole;
-                    SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
+                    SimpleGrantedAuthority authority = new SimpleGrantedAuthority(springRole);
 
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                             subject,
@@ -81,7 +81,7 @@ public class GatewayHeaderAuthFilter extends OncePerRequestFilter {
                             Collections.singletonList(authority)
                     );
                     SecurityContextHolder.getContext().setAuthentication(auth);
-                    logger.info("Autoryzacja międzyserwisowa udana dla: " + subject);
+                    logger.info("Autoryzacja międzyserwisowa udana dla: " + subject + " z rolą: " + springRole);
                 } else {
                     logger.warn("Token prawidłowy, ale brakuje wymaganej roli (claim 'role' jest pusty).");
                 }
