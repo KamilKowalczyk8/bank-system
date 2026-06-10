@@ -95,6 +95,9 @@ public class OnboardingService {
             log.error("SZCZEGÓŁY BŁĘDU (Z kroku 2 lub 3): {}", e.getMessage());
             log.error("BŁĄD! Przerwano proces. Uruchamiam procedurę kompensacji (rollback) dla authId: {}", generatedAuthId);
 
+            String errorMessage = "Awaria podczas procesu Onboardingu nowego konta (błąd serwisu zależnego). Uruchomiono Sagę, Szczegóły: " + e.getMessage();
+            errorReporter.report(new RuntimeException(errorMessage, e));
+
             if (isCustomerProfileCreated) {
                 try {
                     log.info("Cofanie profilu w customer-service...");
