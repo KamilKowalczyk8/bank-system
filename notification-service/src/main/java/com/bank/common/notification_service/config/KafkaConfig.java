@@ -13,10 +13,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class KafkaProducerConfig {
+public class KafkaConfig {
 
     @Value("${spring.kafka.bootstrap-servers:kafka:9092}")
     private String bootstrapServers;
+
+    // ==========================================
+    // PRODUCER - Wysyłanie wiadomości
+    // ==========================================
 
     @Bean
     public ProducerFactory<String, Object> producerFactory() {
@@ -34,4 +38,12 @@ public class KafkaProducerConfig {
     public KafkaTemplate<String, Object> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
+
+    // ==========================================
+    // CONSUMER - Odbieranie wiadomości
+    // ==========================================
+
+
+
+
 }
