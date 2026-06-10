@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.converter.JsonMessageConverter;
+import org.springframework.kafka.support.converter.RecordMessageConverter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +45,10 @@ public class KafkaConfig {
     // CONSUMER - Odbieranie wiadomości
     // ==========================================
 
-
-
+    @Bean
+    public RecordMessageConverter converter() {
+        return new JsonMessageConverter();
+    }
+    // konwertuje wiadomość przychodząca na konkretną klase
 
 }
