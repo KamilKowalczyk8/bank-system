@@ -26,7 +26,7 @@ public class NotificationEventListener {
 
     private final List<NotificationPort> notificationChannels;
 
-    @KafkaListener(topics = "system-notifications-topic", groupId = "notification-group")
+    @KafkaListener(topics = "system-notifications-topic")
     public void handleSystemNotification(SendNotificationEvent event) {
         log.info("KAFKA = Otrzymano żądanie wysyłki powiadomienia systemowego od AI: {}", event.title());
 
@@ -45,7 +45,7 @@ public class NotificationEventListener {
         }
     }
 
-    @KafkaListener(topics = "customer-registration-events", groupId = "notification-group")
+    @KafkaListener(topics = "customer-registration-events")
     public void handleCustomerRegistration(CustomerRegisteredEvent event) {
         log.info("KAFKA = Otrzymano nową paczkę z taśmociągu!");
 
@@ -66,7 +66,7 @@ public class NotificationEventListener {
         }
     }
 
-    @KafkaListener(topics = "card-created-events", groupId = "notification-group")
+    @KafkaListener(topics = "card-created-events")
     public void handleCardCreation(CardCreatedEvent event) {
         log.info("KAFKA = Otrzymano nową paczkę z taśmociągu (Nowa Karta)!");
 
@@ -88,7 +88,7 @@ public class NotificationEventListener {
         }
     }
 
-    @KafkaListener(topics = "payment.failed", groupId = "notification-group")
+    @KafkaListener(topics = "payment.failed")
     public void handlePaymentFailed(PaymentFailedEvent event) {
         log.info("KAFKA = Otrzymano zdarzenie o odrzuconym przelewie: {}", event.paymentId());
 
