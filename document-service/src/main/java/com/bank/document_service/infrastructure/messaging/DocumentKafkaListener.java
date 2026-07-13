@@ -34,8 +34,8 @@ public class DocumentKafkaListener {
             );
 
             log.info("Sukces! Proces generowania dokumentów dla {} zakończony.", eventDto.login());
-        } catch (Exception e) {
-            log.error("Krytyczny błąd podczas generowania dokumentów z Kafki: {}", e.getMessage());
+        } catch (Throwable e) {
+            log.error("Krytyczny błąd/Error podczas generowania dokumentów z Kafki: {}", e.getMessage(), e);
         }
     }
 }
