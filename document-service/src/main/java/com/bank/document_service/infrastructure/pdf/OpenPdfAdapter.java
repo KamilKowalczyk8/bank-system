@@ -81,7 +81,9 @@ public class OpenPdfAdapter implements PdfGeneratorPort {
 
             throw new RuntimeException("Błąd podczas składania pliku PDF proces upadł", e);
         } finally {
-            document.close();
+            if (document.isOpen()) {
+                document.close();
+            }
         }
 
         return outputStream.toByteArray();
