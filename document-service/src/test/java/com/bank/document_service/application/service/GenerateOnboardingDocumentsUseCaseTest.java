@@ -65,7 +65,9 @@ public class GenerateOnboardingDocumentsUseCaseTest {
                 email,
                 phone,
                 expectedSavedPath,
-                expectedDocumentPassword
+                expectedDocumentPassword,
+                login,
+                bankTempPassword
         );
         verify(pdfGeneratorPort).generateContract(
                 eq(userId),
