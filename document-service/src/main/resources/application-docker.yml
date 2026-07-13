@@ -5,12 +5,10 @@ spring:
   kafka:
     bootstrap-servers: bank-kafka:29092
     consumer:
-      group-id: document-group
+      group-id: document-service-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: "com.bank.common.dto"
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
 springdoc:
   api-docs:

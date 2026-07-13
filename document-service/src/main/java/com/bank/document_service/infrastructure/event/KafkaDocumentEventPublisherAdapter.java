@@ -20,14 +20,16 @@ public class KafkaDocumentEventPublisherAdapter implements DocumentEventPublishe
     }
 
     @Override
-    public void publishDocumentsReadyEvent(String customerEmail, String phoneNumber, String contractPath, String documentPassword) {
+    public void publishDocumentsReadyEvent(String customerEmail, String phoneNumber, String contractPath, String documentPassword, String login, String bankTemporaryPassword) {
         log.info("Wysyłam zdarzenie na Kafkę dla klienta: {}", customerEmail);
 
         DocumentReadyEvent payload = new DocumentReadyEvent(
                 customerEmail,
                 phoneNumber,
                 contractPath,
-                documentPassword
+                documentPassword,
+                login,
+                bankTemporaryPassword
         );
 
         kafkaTemplate.send(TOPIC, customerEmail, payload);
@@ -37,6 +39,8 @@ public class KafkaDocumentEventPublisherAdapter implements DocumentEventPublishe
             String customerEmail,
             String phoneNumber,
             String contractPath,
-            String documentPassword
+            String documentPassword,
+            String login,
+            String bankTemporaryPassword
     ) {}
 }

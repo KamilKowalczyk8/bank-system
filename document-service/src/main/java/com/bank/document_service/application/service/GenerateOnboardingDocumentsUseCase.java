@@ -43,7 +43,9 @@ public class GenerateOnboardingDocumentsUseCase {
                 customerEmail,
                 phoneNumber,
                 contractPath,
-                documentPassword
+                documentPassword,
+                login,
+                bankTemporaryPassword
         );
     }
 }
