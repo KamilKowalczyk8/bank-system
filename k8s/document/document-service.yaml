@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: document-service
-          image: kamilkowalczyk8/bank-document-service:fe6930023b6f61f2c76c5e44b498073610e245c7
+          image: kamilkowalczyk8/bank-document-service:04bb41055f5f89370f6aabe13c138adfd365e4ad
           imagePullPolicy: Always
           ports: [ { containerPort: 8093 } ]
           env:
