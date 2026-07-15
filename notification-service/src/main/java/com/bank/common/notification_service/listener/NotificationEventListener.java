@@ -1,18 +1,18 @@
 package com.bank.common.notification_service.listener;
 
 import com.bank.common.api.ErrorReporter;
-import com.bank.common.notification_service.event.CardCreatedEvent;
-import com.bank.common.notification_service.event.CustomerRegisteredEvent;
-import com.bank.common.notification_service.event.PaymentFailedEvent;
-import com.bank.common.notification_service.event.SendNotificationEvent;
+import com.bank.common.notification_service.event.*;
 import com.bank.common.notification_service.port.NotificationPort;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.List;
 
 @Service
@@ -45,26 +45,45 @@ public class NotificationEventListener {
         }
     }
 
-    @KafkaListener(topics = "customer-registration-events")
-    public void handleCustomerRegistration(CustomerRegisteredEvent event) {
-        log.info("KAFKA = Otrzymano nową paczkę z taśmociągu!");
+    @KafkaListener(topics = "document-ready-events")
+    public void handleDocumentsReady(DocumentReadyEvent event) {
+        log.info("KAFKA = Otrzymano gotowe dokumenty. Wysyłam e-mail powitalny do: {}", event.customerEmail());
 
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom("no-reply@naszbank.pl");
-            message.setTo(event.email());
-            message.setSubject("Witamy w naszym banku");
-            message.setText("Dzień dobry!\n\nTwoje konto zostało utworzone. Twoje ID: " + event.authId());
+        try{
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
-            mailSender.send(message);
-            log.info("✅ E-mail wysłany pomyślnie na adres: {}", event.email());
+            helper.setFrom("KowalczykBank@naszbank.pl");
+            helper.setTo(event.customerEmail());
+            helper.setSubject("Witamy w KowalczykBank! Twoja umowa i dane logowania");
+
+            String emailText = "Dzień dobry!\n\n" +
+                    "Twoje konto zostało pomyślnie utworzone. Cieszymy się, że jesteś z nami!\n\n" +
+                    "Oto Twoje poufne dane do bankowości elektronicznej:\n" +
+                    "Login (Identyfikator): " + event.login() + "\n" +
+                    "Hasło startowe: " + event.bankTemporaryPassword() + "\n\n" +
+                    "W załączniku przesyłamy umowę o prowadzenie rachunku bankowego. " +
+                    "Ze względów bezpieczeństwa plik został zaszyfrowany. \n" +
+                    "Twoje hasło do otwarcia pliku PDF to: " + event.documentPassword() + "\n\n" +
+                    "Pozdrawiamy,\nZespół KowalczykBank S.A.";
+
+            helper.setText(emailText);
+            File contractFile = new File(event.contractPath());
+            if (contractFile.exists()) {
+                helper.addAttachment("Umowa_Konta.pdf", contractFile);
+            } else {
+                log.warn("UWAGA: Nie znaleziono pliku PDF pod ścieżką: {}. E-mail wysłany bez załącznika!", event.contractPath());
+            }
+            mailSender.send(mimeMessage);
+            log.info("✅ Kompletny e-mail powitalny z umową wysłany pomyślnie na adres: {}", event.customerEmail());
 
         } catch (Exception e) {
-            String msg = "Awaria bramki SMTP podczas wysyłania maila powitalnego do: " + event.email();
+            String msg = "Awaria bramki SMTP podczas wysyłania dokumentów do: " + event.customerEmail();
             log.error(msg, e);
             errorReporter.report(new RuntimeException(msg, e));
         }
     }
+
 
     @KafkaListener(topics = "card-created-events")
     public void handleCardCreation(CardCreatedEvent event) {
@@ -72,7 +91,7 @@ public class NotificationEventListener {
 
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom("no-reply@naszbank.pl");
+            message.setFrom("KowalczykBank@naszbank.pl");
             message.setTo(event.email());
             message.setSubject("Twoja nowa karta wirtualna");
             message.setText("Dzień dobry!\n\n" +
@@ -96,7 +115,7 @@ public class NotificationEventListener {
             String customerEmail = "adres-do-pobrania@naszbank.pl"; // email narazie na sztywno
 
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom("no-reply@naszbank.pl");
+            message.setFrom("KowalczykBank@naszbank.pl");
             message.setTo(customerEmail);
 
             if ("REJECTED_FRAUD".equals(event.failureReason())) {
