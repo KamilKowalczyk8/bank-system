@@ -11,6 +11,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.S3Client;
 
 import java.io.File;
 import java.util.List;
@@ -23,6 +24,7 @@ public class NotificationEventListener {
 
     private final JavaMailSender mailSender;
     private final ErrorReporter errorReporter;
+    private final S3Client s3Client;
 
     private final List<NotificationPort> notificationChannels;
 
@@ -49,7 +51,15 @@ public class NotificationEventListener {
     public void handleDocumentsReady(DocumentReadyEvent event) {
         log.info("KAFKA = Otrzymano gotowe dokumenty. Wysyłam e-mail powitalny do: {}", event.customerEmail());
 
-        try{
+        try {
+            software.amazon.awssdk.services.s3.model.GetObjectRequest getObjectRequest =  //pobranie pliku pdf z MiniO do pamięci RAM
+                    software.amazon.awssdk.services.s3.model.GetObjectRequest.builder()
+                            .bucket("bank-documents")
+                            .key(event.contractPath())
+                            .build();
+
+            byte[] fileBytes = s3Client.getObjectAsBytes(getObjectRequest).asByteArray();
+
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
@@ -68,17 +78,15 @@ public class NotificationEventListener {
                     "Pozdrawiamy,\nZespół KowalczykBank S.A.";
 
             helper.setText(emailText);
-            File contractFile = new File(event.contractPath());
-            if (contractFile.exists()) {
-                helper.addAttachment("Umowa_Konta.pdf", contractFile);
-            } else {
-                log.warn("UWAGA: Nie znaleziono pliku PDF pod ścieżką: {}. E-mail wysłany bez załącznika!", event.contractPath());
-            }
+
+            helper.addAttachment("Umowa_Konta.pdf", new org.springframework.core.io.ByteArrayResource(fileBytes));
+
             mailSender.send(mimeMessage);
             log.info("✅ Kompletny e-mail powitalny z umową wysłany pomyślnie na adres: {}", event.customerEmail());
-
+        } catch (software.amazon.awssdk.services.s3.model.NoSuchKeyException e) {
+            log.error("Awaria pobierania: Plik {} nie istnieje w MinIO!", event.contractPath());
         } catch (Exception e) {
-            String msg = "Awaria bramki SMTP podczas wysyłania dokumentów do: " + event.customerEmail();
+            String msg = "Awaria bramki SMTP / S3 podczas wysyłania dokumentów do: " + event.customerEmail();
             log.error(msg, e);
             errorReporter.report(new RuntimeException(msg, e));
         }
