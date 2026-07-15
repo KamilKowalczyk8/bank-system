@@ -17,6 +17,15 @@ spring:
           starttls:
             enable: false
 
+cloud:
+  aws:
+    s3:
+      endpoint: http://minio:9000
+      access-key: admin
+      secret-key: adminhaslo
+      bucket: bank-documents
+      region: us-east-1
+
 springdoc:
   api-docs:
     enabled: false
